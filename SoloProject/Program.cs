@@ -54,7 +54,7 @@ namespace SoloProject
                         break;
                     case 3:
                         //상점
-                        Store();
+                        Store(n);
                         break;
                     default:
                         Console.WriteLine("잘못된 입력입니다.\n");
@@ -66,7 +66,7 @@ namespace SoloProject
             void outMenu(int number)
             {
                 int n;
-                Console.WriteLine("0.나가기\n");
+                Console.WriteLine("0. 나가기\n");
                 n = Number();
                 if (n == 0)
                 {
@@ -74,10 +74,36 @@ namespace SoloProject
                 }
                 else
                 {
-                    Console.WriteLine("잘못된 입력입니다.\n");
-                    if(number == 1)//number번호에 따라 되돌아가는 화면 바꿀 수 있게 설정
+                    //number번호에 따라 되돌아가는 화면 바꿀 수 있게 설정
+                    if (number == 2)
                     {
-                        Menu2(1);
+                        if (n == 1)
+                        {
+                            if (item == null)
+                            {
+                                Console.WriteLine("보유 중인 아이템이 없습니다.\n");
+                                Inventory(number);
+                            }
+                            else
+                            {
+                                //아이템 리스트 보여주기
+                                //0. 나가기 하면 바로 메뉴로 나가게 하는게 맞을까?
+                            }
+                        }
+                        else
+                        {
+                            Console.WriteLine("잘못된 입력입니다.\n");
+                            Menu2(number);
+                        }
+                    }
+                    //else if (number == 3) 아이템 리스트 만들고 구매 만들어지면 사용.
+                    //{
+
+                    //}
+                    else
+                    {
+                        Console.WriteLine("잘못된 입력입니다.\n");
+                        Menu2(number);
                     }
                 }
             }
@@ -98,54 +124,53 @@ namespace SoloProject
             
             void Inventory(int number)
             {
-                int n;
                 Console.WriteLine("인벤토리");
                 Console.WriteLine();
                 Console.WriteLine("1. 장착관리");
-                Console.WriteLine("0.나가기\n");
-                n = Number();
-                if (n == 0) 
-                {
-                    Menu2(Menu());
-                }
-                else if (n == 1)
-                {
-                    if(item == null)
-                    {
-                        Console.WriteLine("보유 중인 아이템이 없습니다.\n");
-                        Inventory(n);
-                    }
-                    else
-                    {
-                        //아이템 리스트 보여주기
-                        //0. 나가기 하면 바로 메뉴로 나가게 하는게 맞을까?
-                    }
-                }
-                else
-                {
-                    Console.WriteLine("잘못된 입력입니다.\n");
-                    Menu2(2);
-                }
+                outMenu(number);
+                //Console.WriteLine("0.나가기\n");
+                //int n = Number();
+                //if (n == 0) 
+                //{
+                //    Menu2(Menu());
+                //}
+                //else if (n == 1)
+                //{
+                //    if(item == null)
+                //    {
+                //        Console.WriteLine("보유 중인 아이템이 없습니다.\n");
+                //        Inventory(n);
+                //    }
+                //    else
+                //    {
+                //        //아이템 리스트 보여주기
+                //        //0. 나가기 하면 바로 메뉴로 나가게 하는게 맞을까?
+                //    }
+                //}
+                //else
+                //{
+                //    Console.WriteLine("잘못된 입력입니다.\n");
+                //    Menu2(2);
+                //}
             }
-            
-            void Store()
+
+            void Store(int number)
             {
-                int n;
                 Console.WriteLine("상점");
                 Console.WriteLine();
                 //상점 아이템 리스트 작성 필요. storeItem
-                //outMenu(); 이후에 추가되는 선택지에 따라 outMenu 사용불가
-                Console.WriteLine("0.나가기\n");
-                n = Number();
-                if (n == 0)
-                {
-                    Menu2(Menu());
-                }
-                else
-                {
-                    Console.WriteLine("잘못된 입력입니다.\n");
-                    Menu2(3);
-                }
+                outMenu(number);
+                //Console.WriteLine("0.나가기\n");
+                //int n = Number();
+                //if (n == 0)
+                //{
+                //    Menu2(Menu());
+                //}
+                //else
+                //{
+                //    Console.WriteLine("잘못된 입력입니다.\n");
+                //    Menu2(3);
+                //}
             }
         }
     }
