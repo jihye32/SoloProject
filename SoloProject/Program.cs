@@ -45,12 +45,15 @@ namespace SoloProject
                 switch (n)
                 {
                     case 1:
+                        //상태보기
                         State(n);
                         break;
                     case 2:
+                        //인벤토리
                         Inventory(n);
                         break;
                     case 3:
+                        //상점
                         Store();
                         break;
                     default:
@@ -60,7 +63,7 @@ namespace SoloProject
                         break;
                 }
             }
-            void outMenu()
+            void outMenu(int number)
             {
                 int n;
                 Console.WriteLine("0.나가기\n");
@@ -72,13 +75,15 @@ namespace SoloProject
                 else
                 {
                     Console.WriteLine("잘못된 입력입니다.\n");
-                    //잘못된 입력입니다. 하고 그 전 페이지로 돌아가기 위해서 어떻게 해야할지 생각 필요.
+                    if(number == 1)//number번호에 따라 되돌아가는 화면 바꿀 수 있게 설정
+                    {
+                        Menu2(1);
+                    }
                 }
             }
             
             void State(int number)
             {
-                int n;
                 Console.WriteLine("상태보기");
                 Console.WriteLine();
                 Console.WriteLine("Lv. 0{0}", Lv); //10이 넘어갔을 때 값 변경 추가 필요
@@ -86,21 +91,9 @@ namespace SoloProject
                 Console.WriteLine("공격력 : {0}", Strike); //무기에 따른 추가 값 따로 설정 어떻게 할지 고민
                 Console.WriteLine("방어력 : {0}", Depence); //방어구에 따른 추가 값 따로 설정 어떻게 할지 고민
                 Console.WriteLine("체  력 : {0}", HP);
-                Console.WriteLine("Gold : {0}", Gold);
+                Console.WriteLine("Gold : {0}\n", Gold);
 
-                //outMenu();
-                Console.WriteLine("0.나가기\n");
-                n = Number();
-                if (n == 0)
-                {
-                    Menu2(Menu());
-                }
-                else
-                {
-                    Console.WriteLine("잘못된 입력입니다.\n");
-                    n = 1;
-                    Menu2(n);
-                }
+                outMenu(number);
             }
             
             void Inventory(int number)
@@ -131,8 +124,7 @@ namespace SoloProject
                 else
                 {
                     Console.WriteLine("잘못된 입력입니다.\n");
-                    n = number;
-                    Menu2(n);
+                    Menu2(2);
                 }
             }
             
@@ -152,8 +144,7 @@ namespace SoloProject
                 else
                 {
                     Console.WriteLine("잘못된 입력입니다.\n");
-                    n = 3;
-                    Menu2(n);
+                    Menu2(3);
                 }
             }
         }
