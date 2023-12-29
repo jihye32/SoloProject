@@ -5,17 +5,20 @@ namespace SoloProject
 {
     internal class Program
     {
-        
-
         static void Main(string[] args)
         {
             //사용하는 전역변수 추가
+
+            int selectNumber; //0. 나가기를 입력할 때마다 메인 화면으로 이동할 수 있도록 설정 및 바뀐 화면마다 고르는 숫자에 따른 선택 화변 변경.
+            string[] item = null; //보유 중인 아이템 목록.
+
+            //캐릭터 상태 변수
             int Strike = 10;
             int Depence = 5;
             int HP = 100;
             int Gold = 1500;
             int Lv = 1;
-            int selectNumber; //0. 나가기를 입력할 때마다 메인 화면으로 이동할 수 있도록 설정 및 바뀐 화면마다 고르는 숫자에 따른 선택 화변 변경.
+            
 
             Menu2(Menu());
             
@@ -29,9 +32,13 @@ namespace SoloProject
             }
             int Number()
             {
+                int n;
                 Console.Write("원하시는 행동을 입력해주세요.\n>>");
-                int n = int.Parse(Console.ReadLine());
-                return n;
+
+                //숫자가 아닌 문자를 입력했을 때 잘못입력했다는 알림 나오게 추가.
+                bool check = int.TryParse(Console.ReadLine(), out n);
+                int number = check ? n : -1;
+                return number;
             }
             void Menu2(int n)//case 안에 있는 내용들 함수로 만들기, 0.나가기만 있을 때 함수도 따로 만들기.
             {
@@ -73,7 +80,7 @@ namespace SoloProject
                         }
                         break;
                     default:
-                        Console.WriteLine("잘못된 입력입니다.");
+                        Console.WriteLine("잘못된 입력입니다.\n");
                         Menu2(Menu());
                         //위에 콘솔 내용 삭제.
                         break;
@@ -103,9 +110,22 @@ namespace SoloProject
                 Console.WriteLine("1. 장착관리");
                 Console.WriteLine("0.나가기\n");
                 n = Number();
-                if (n == 0)
+                if (n == 0) 
                 {
                     Menu2(Menu());
+                }
+                else if (n == 1)
+                {
+                    if(item == null)
+                    {
+                        Console.WriteLine("보유 중인 아이템이 없습니다.\n");
+                        Inventory(n);
+                    }
+                    else
+                    {
+                        //아이템 리스트 보여주기
+                        //0. 나가기 하면 바로 메뉴로 나가게 하는게 맞을까?
+                    }
                 }
                 else
                 {
@@ -115,6 +135,5 @@ namespace SoloProject
                 }
             }
         }
-        
     }
 }
