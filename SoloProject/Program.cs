@@ -45,20 +45,7 @@ namespace SoloProject
                 switch (n)
                 {
                     case 1:
-                        Console.WriteLine("상태보기");
-                        Console.WriteLine();
-                        Console.WriteLine("0.나가기\n");
-                        n=Number();
-                        if (n == 0)
-                        {
-                            Menu2(Menu());
-                        }
-                        else
-                        {
-                            Console.WriteLine("잘못된 입력입니다.\n");
-                            n = 1;
-                            Menu2(n);
-                        }
+                        State(n);
                         break;
                     case 2:
                         Inventory(n);
@@ -66,6 +53,7 @@ namespace SoloProject
                     case 3:
                         Console.WriteLine("상점");
                         Console.WriteLine();
+                        //outMenu();
                         Console.WriteLine("0.나가기\n");
                         n = Number();
                         if (n == 0)
@@ -99,6 +87,33 @@ namespace SoloProject
                 {
                     Console.WriteLine("잘못된 입력입니다.\n");
                     //잘못된 입력입니다. 하고 그 전 페이지로 돌아가기 위해서 어떻게 해야할지 생각 필요.
+                }
+            }
+            
+            void State(int number)
+            {
+                int n;
+                Console.WriteLine("상태보기");
+                Console.WriteLine();
+                Console.WriteLine("Lv. 0{0}", Lv); //10이 넘어갔을 때 값 변경 추가 필요
+                Console.WriteLine("Chad ( 전사 )"); //직업을 시작 전에 고를 수 잇도록 추가하면 좋을거같음
+                Console.WriteLine("공격력 : {0}", Strike); //무기에 따른 추가 값 따로 설정 어떻게 할지 고민
+                Console.WriteLine("방어력 : {0}", Depence); //방어구에 따른 추가 값 따로 설정 어떻게 할지 고민
+                Console.WriteLine("체  력 : {0}", HP);
+                Console.WriteLine("Gold : {0}", Gold);
+
+                //outMenu();
+                Console.WriteLine("0.나가기\n");
+                n = Number();
+                if (n == 0)
+                {
+                    Menu2(Menu());
+                }
+                else
+                {
+                    Console.WriteLine("잘못된 입력입니다.\n");
+                    n = 1;
+                    Menu2(n);
                 }
             }
             
