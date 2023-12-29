@@ -15,8 +15,8 @@ namespace SoloProject
 
             //상점에서 판매하는 아이템 목록. 레벨이 올라가거나 던전을 클리어할 때마다 아이템 추가 생성 필요. Class로 뺄 수 있을 확률 높음.
             string[] storeItemName = new string[6]; 
-            int[] storeItemStats = new int[6];
-            int[] storeItemGold = new int[6];
+            string[] storeItemStats = new string[6];
+            string[] storeItemGold = new string[6];
 
             //캐릭터 상태 변수
             int Strike = 10;
@@ -24,6 +24,8 @@ namespace SoloProject
             int HP = 100;
             int Gold = 1500;
             int Lv = 1;
+            //int PlusStrike;
+            //int PlusDepence;
             
             Menu2(Menu());
             
@@ -115,7 +117,7 @@ namespace SoloProject
                     if (item == null)
                     {
                         Console.WriteLine("보유 중인 아이템이 없습니다.\n");
-                        Inventory(n);
+                        Inventory(number);
                     }
                     else
                     {
@@ -135,7 +137,7 @@ namespace SoloProject
                 Console.WriteLine("상점");
                 Console.WriteLine();
                 Console.WriteLine("[보유 골드]\n{0}G\n", Gold);
-                StoreItemCreate(); //상점 리세가 가능해서 상점 리세를 가능하게 할 것인지 아니면 안되게 할 것인지 골라야함.
+                StoreItemCreate();
                 StoreItem();
                 Console.WriteLine("\n1. 아이템 구매");
                 Console.WriteLine("0. 나가기\n");
@@ -146,24 +148,59 @@ namespace SoloProject
                 }
                 else if (n == 1)
                 {
-                    Console.WriteLine("[보유 골드]\n{0}G\n", Gold);
-                    StoreItem();
-                    //아이템을 선택해서 구매하면 gold부분을 구매완료로 바꿀 것
-                    //아이템 구매완료일 경우 선택해도 또 구매 못하게 만들 것
-                    //아이템 구매한 것은 따로 저장해둘 것. 판매했을 때 대비
+                    StoreBuy();
                 }
                 else
                 {
                     Console.WriteLine("잘못된 입력입니다.\n");
-                    Menu2(3);
+                    Menu2(number);
+                }
+            }
+
+            void StoreBuy()
+            {
+                Console.WriteLine("[보유 골드]\n{0}G\n", Gold);
+                StoreItem();
+                //아이템 구매한 것은 따로 저장해둘 것. 판매했을 때 대비
+                Console.WriteLine("\n0. 나가기\n");
+                int selectItem = Number();
+                int selectGold = 0;
+                if (selectItem < 0 || selectItem>6)
+                {
+                    Console.WriteLine("잘못된 입력입니다.\n");
+                    StoreBuy();
+                }
+                else if (selectItem == 0)
+                {
+                    Store(3);//이러면 상점 리세 안되게 만들어야함.
+                }
+                else
+                {
+                    selectGold = int.Parse(storeItemGold[selectItem - 1]);
+                    if (storeItemGold[selectItem - 1] == "구매완료")
+                    {
+                        Console.WriteLine("이미 구매하신 상품입니다.");
+                        StoreBuy();
+                    }
+                    else if (selectGold > Gold)
+                    {
+                        Console.WriteLine("Gold가 부족합니다.");
+                        StoreBuy();
+                    }
+                    else if (selectGold <= Gold)
+                    {
+                        Gold = Gold - selectGold;
+                        storeItemGold[selectItem - 1] = "구매완료";
+                        StoreBuy();
+                    }
                 }
             }
 
             void StoreItemCreate()//상점아이템 생성
             {
                 string[] Name = new string[6];
-                int[] Stats = new int[6];
-                int[] Gold = new int[6];
+                string[] Stats = new string[6];
+                string[] Gold = new string[6];
                 for (int i = 0; i < Name.Length; i++)
                 {
                     int nameNumber = random.Next(1, 4);
@@ -180,21 +217,21 @@ namespace SoloProject
                 }
                 for (int i = 0; i < Stats.Length; i++)
                 {
-                    Stats[i] = random.Next(1 + Lv, 5 + Lv);
+                    Stats[i] = random.Next(1 + Lv, 5 + Lv).ToString("N0");
                 }
                 for (int i = 0; i < storeItemGold.Length; i++)
                 {
-                    Gold[i] = random.Next(100 + Lv * random.Next(0, 10), 1000 + Lv * random.Next(0, 100));
+                    Gold[i] = random.Next(100 + Lv * random.Next(0, 10), 1000 + Lv * random.Next(0, 100)).ToString("N0");
                 }
                 foreach (string n in Name)
                 {
                     storeItemName = Name;
                 }
-                foreach(int i in Gold)
+                foreach(string i in Gold)
                 {
                     storeItemGold = Gold;
                 }
-                foreach (int i in Stats)
+                foreach (string i in Stats)
                 {
                     storeItemStats = Stats;
                 }
@@ -206,9 +243,9 @@ namespace SoloProject
                 {
                     if (storeItemName[i] == "창" || storeItemName[i] == "검")
                     {
-                        Console.WriteLine("{0} {1}\t| 공격력 +{2} | {3}G", i, storeItemName[i], storeItemStats[i], storeItemGold[i]);
+                        Console.WriteLine("{0} {1}\t| 공격력 +{2} | {3}G", i+1, storeItemName[i], storeItemStats[i], storeItemGold[i]);
                     }
-                    else { Console.WriteLine("{0} {1}\t| 방어력 +{2} | {3}G", i, storeItemName[i], storeItemStats[i], storeItemGold[i]); }
+                    else { Console.WriteLine("{0} {1}\t| 방어력 +{2} | {3}G", i+1, storeItemName[i], storeItemStats[i], storeItemGold[i]); }
                 }
             }
         }
