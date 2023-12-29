@@ -7,10 +7,10 @@ namespace SoloProject
     {
         static void Main(string[] args)
         {
-            //사용하는 전역변수 추가
-
+            //사용하는 전역변수 추가, 현재 지역변수로 사용하는 것들 중에서 전역변수로 나갈 수 있음.
             int selectNumber; //0. 나가기를 입력할 때마다 메인 화면으로 이동할 수 있도록 설정 및 바뀐 화면마다 고르는 숫자에 따른 선택 화변 변경.
             string[] item = null; //보유 중인 아이템 목록.
+            string[] storeItem = null; //상점에서 판매하는 아이템 목록. 레벨이 올라가거나 던전을 클리어할 때마다 아이템 추가 생성 필요.
 
             //캐릭터 상태 변수
             int Strike = 10;
@@ -51,21 +51,7 @@ namespace SoloProject
                         Inventory(n);
                         break;
                     case 3:
-                        Console.WriteLine("상점");
-                        Console.WriteLine();
-                        //outMenu();
-                        Console.WriteLine("0.나가기\n");
-                        n = Number();
-                        if (n == 0)
-                        {
-                            Menu2(Menu());
-                        }
-                        else
-                        {
-                            Console.WriteLine("잘못된 입력입니다.\n");
-                            n = 3;
-                            Menu2(n);
-                        }
+                        Store();
                         break;
                     default:
                         Console.WriteLine("잘못된 입력입니다.\n");
@@ -146,6 +132,27 @@ namespace SoloProject
                 {
                     Console.WriteLine("잘못된 입력입니다.\n");
                     n = number;
+                    Menu2(n);
+                }
+            }
+            
+            void Store()
+            {
+                int n;
+                Console.WriteLine("상점");
+                Console.WriteLine();
+                //상점 아이템 리스트 작성 필요. storeItem
+                //outMenu(); 이후에 추가되는 선택지에 따라 outMenu 사용불가
+                Console.WriteLine("0.나가기\n");
+                n = Number();
+                if (n == 0)
+                {
+                    Menu2(Menu());
+                }
+                else
+                {
+                    Console.WriteLine("잘못된 입력입니다.\n");
+                    n = 3;
                     Menu2(n);
                 }
             }
