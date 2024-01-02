@@ -12,6 +12,8 @@ namespace SoloProject
 
         static void Main(string[] args)
         {
+            StoreItem item = new StoreItem();
+            item.StoreItemList();
             Menu menu = new Menu();
             menu.setMenu();
         }
@@ -29,9 +31,8 @@ namespace SoloProject
             {
                 State state = new State();
                 Invetory inventory = new Invetory();
-                Store store = new Store();
+               // Store store = new Store();
 
-                Console.Clear();
                 switch (n)
                 {
                     case 1:
@@ -46,7 +47,7 @@ namespace SoloProject
                     case 3:
                         //상점
                         //store.ResetStoreItem();
-                        store.ViewStore();
+                       // store.ViewStore();
                         break;
                     default:
                         Console.Clear();
@@ -72,23 +73,6 @@ namespace SoloProject
             int number = check ? n : -1;
             return number;
         }
-
-        //static void outMenu(int number)
-        //{
-        //    int n;
-        //    Console.WriteLine("0. 나가기\n");
-        //    n = Number();
-        //    if (n == 0)
-        //    {
-        //        Menu2(Menu());
-        //    }
-        //    else
-        //    {
-        //        //number번호에 따라 되돌아가는 화면 바꿀 수 있게 설정
-        //        Console.WriteLine("잘못된 입력입니다.\n");
-        //        Menu2(number);
-        //    }
-        //}
 
         class State : Menu
         {
@@ -155,11 +139,6 @@ namespace SoloProject
 
         class Invetory : Menu
         {
-            public string[] name;
-            public string[] stats;
-            public int[] gold;
-            public string[] comment;
-
             public void ViewInventory()
             {
                 Console.WriteLine("인벤토리\n");
@@ -174,12 +153,12 @@ namespace SoloProject
                 }
                 else if (n == 1)
                 {
-                    if (name == null)
-                    {
-                        Console.Clear();
-                        Console.WriteLine("보유 중인 아이템이 없습니다.");
-                        ViewInventory();
-                    }
+                    //if (name == null)
+                    //{
+                    //    Console.Clear();
+                    //    Console.WriteLine("보유 중인 아이템이 없습니다.");
+                    //    ViewInventory();
+                    //}
                     //else
                     //{
                     //    InventoryItem(1);
@@ -197,6 +176,61 @@ namespace SoloProject
 
             }
         }
+
+        class Store : Menu
+        {
+            //    public void ViewStore();
+
+            //    public void CreateItem();
+
+            //    public void ResetStoreItem()
+            //    {
+            //        //item.StoreItemCreate();
+            //    }
+            //    //    void StoreBuy()
+            //    //    {
+            //    //        Console.Clear();
+            //    //        Console.WriteLine("[보유 골드]\n{0}G\n", state.Gold);
+            //    //        item.ViewStoreItem(0);
+            //    //        //아이템 구매한 것은 따로 저장해둘 것. 판매했을 때 대비
+            //    //        Console.WriteLine("\n0. 나가기\n");
+            //    //        int selectItem = Number();
+            //    //        if (selectItem < 0 || selectItem > 6)
+            //    //        {
+            //    //            Console.WriteLine("잘못된 입력입니다.\n");
+            //    //            StoreBuy();
+            //    //        }
+            //    //        else if (selectItem == 0)
+            //    //        {
+            //    //            StoreBuy();
+            //    //        }
+            //    //        else
+            //    //        {
+            //    //            //int selectGold = int.Parse(storeItemGold[selectItem - 1]);
+            //    //            //if (storeItemGold[selectItem - 1] == "구매완료")
+            //    //            //{
+            //    //            //    Console.WriteLine("이미 구매하신 상품입니다.");
+            //    //            //    StoreBuy();
+            //    //            //}
+            //    //            //else if (selectGold > Gold)
+            //    //            //{
+            //    //            //    Console.WriteLine("Gold가 부족합니다.");
+            //    //            //    StoreBuy();
+            //    //            //}
+            //    //            //else if (selectGold <= Gold)
+            //    //            //{
+            //    //            //    Gold = Gold - selectGold;
+
+            //    //            //    itemName.Add(storeItemName[selectItem - 1]);
+            //    //            //    itemStats.Add(storeItemStats[selectItem - 1]);
+            //    //            //    itemGold.Add(storeItemGold[selectItem - 1]);
+
+            //    //            //    storeItemGold[selectItem - 1] = "구매완료";
+            //    //            //    StoreBuy();
+            //    //            //}
+            //    //        }
+        }
+
 
         class InventoryItem : Invetory
         {
@@ -310,156 +344,205 @@ namespace SoloProject
         //    }
         //}
 
-        class Store : Menu
+        class StoreItem 
         {
-            State state = new State();
-            StoreItem item = new StoreItem();
-
-            public void ViewStore()
+            Item ItemName = new ItemName();
+            Item ItemStats = new ItemStats();
+            Item ItemGold = new ItemGold();
+            Item ItemComment = new ItemComment();
+            int i=0;
+            public void StoreItemList()
             {
-                Console.WriteLine("상점");
-                Console.WriteLine();
-                Console.WriteLine("[보유 골드]\n{0}G\n", state.Gold);
-                //        item.ViewStoreItem("-");
-                Console.WriteLine("\n1. 아이템 구매");
-                Console.WriteLine("0. 나가기\n");
-                int n = Number();
-                if (n == 0)
+                ItemName.Make();
+                for(int i = 0; i < 6; i++)
                 {
-                    setMenu();
-                }
-                else if (n == 1)
-                {
-                    //StoreBuy();
-                }
-                else
-                {
-                    Console.WriteLine("잘못된 입력입니다.\n");
-                    ViewStore();
+                    Console.WriteLine(ItemName.name[i]);
                 }
             }
-
-            public void ResetStoreItem()
-            {
-                //item.StoreItemCreate();
-            }
-            //    void StoreBuy()
-            //    {
-            //        Console.Clear();
-            //        Console.WriteLine("[보유 골드]\n{0}G\n", state.Gold);
-            //        item.ViewStoreItem(0);
-            //        //아이템 구매한 것은 따로 저장해둘 것. 판매했을 때 대비
-            //        Console.WriteLine("\n0. 나가기\n");
-            //        int selectItem = Number();
-            //        if (selectItem < 0 || selectItem > 6)
-            //        {
-            //            Console.WriteLine("잘못된 입력입니다.\n");
-            //            StoreBuy();
-            //        }
-            //        else if (selectItem == 0)
-            //        {
-            //            StoreBuy();
-            //        }
-            //        else
-            //        {
-            //            //int selectGold = int.Parse(storeItemGold[selectItem - 1]);
-            //            //if (storeItemGold[selectItem - 1] == "구매완료")
-            //            //{
-            //            //    Console.WriteLine("이미 구매하신 상품입니다.");
-            //            //    StoreBuy();
-            //            //}
-            //            //else if (selectGold > Gold)
-            //            //{
-            //            //    Console.WriteLine("Gold가 부족합니다.");
-            //            //    StoreBuy();
-            //            //}
-            //            //else if (selectGold <= Gold)
-            //            //{
-            //            //    Gold = Gold - selectGold;
-
-            //            //    itemName.Add(storeItemName[selectItem - 1]);
-            //            //    itemStats.Add(storeItemStats[selectItem - 1]);
-            //            //    itemGold.Add(storeItemGold[selectItem - 1]);
-
-            //            //    storeItemGold[selectItem - 1] = "구매완료";
-            //            //    StoreBuy();
-            //            //}
-            //        }
         }
 
-        class StoreItem
+        abstract class Item
         {
-            //Random rand = new Random();
-            //State state = new State();
+            public string[] name = new string[6];
+            public int[] stats = new int[6];
+            public string[] gold = new string[6];
+            public string[] comment = new string[6];
+            public abstract void Make();
+        }
 
-            //string[] storeItemName = new string[6];
-            //string[] storeItemStats = new string[6];
-            //string[] storeItemGold = new string[6];
+        class ItemName : Item
+        {
+            Random random1 = new Random();
+            Random random2 = new Random();
 
-            public void StoreItemCreate()//상점아이템 생성
+            string[] firstName = {"나무", "낡은 ", "청동", "무쇠", "스파트라의 "};
+            string[] secondName = { "갑옷", "검", "창"};
+
+            public override void Make()
             {
-                //        string[] Name = new string[6];
-                //        string[] Stats = new string[6];
-                //        string[] Gold = new string[6];
-                //        for (int i = 0; i < Name.Length; i++)
-                //        {
-                //            int nameNumber = rand.Next(1, 4);
-                //            if (nameNumber == 1)
-                //            {
-                //                Name[i] = "창";
-                //            }
-                //            else if (nameNumber == 2)
-                //            {
-                //                Name[i] = "검";
-                //            }
-                //            else
-                //                Name[i] = "갑옷";
-                //        }
-                //        for (int i = 0; i < Stats.Length; i++)
-                //        {
-                //            Stats[i] = rand.Next(1 + state.Lv, 5 + state.Lv).ToString("N0");
-                //        }
-                //        for (int i = 0; i < Gold.Length; i++)
-                //        {
-                //            Gold[i] = rand.Next(100 + state.Lv * rand.Next(0, 10), 1000 + state.Lv * rand.Next(0, 100)).ToString("N0");
-                //        }
-                //        foreach (string n in Name)
-                //        {
-                //            storeItemName = Name;
-                //        }
-                //        foreach (string i in Gold)
-                //        {
-                //            storeItemGold = Gold;
-                //        }
-                //        foreach (string i in Stats)
-                //        {
-                //            storeItemStats = Stats;
-                //        }
+                int itemLength = name.Length;
+                for (int i = 0; i < itemLength; i++)
+                {
+                    int n = random1.Next(10);
+                    int nn = random2.Next(10);
+                    if (n < 5)
+                    {
+                        if (nn < 5)
+                        {
+                            name[i] = firstName[i % 5] + secondName[0];
+                        }
+                        else { name[i] = firstName[i % 5] + secondName[i % 3]; }
+                    }
+                    else if (n < 8)
+                    {
+                        if (nn < 5)
+                        {
+                            name[i] = firstName[i % 3] + secondName[0];
+                        }
+                        else { name[i] = firstName[i % 3] + secondName[i % 3]; }
+                        
+                    }
+                    else
+                    {
+                        if (nn < 5)
+                        {
+                            name[i] = firstName[i % 3] + secondName[0];
+                        }
+                        else { name[i] = firstName[i % 2] + secondName[i % 3]; }
+                    }
+                }  
             }
 
-            public void ViewStoreItem(string bonus)
+            public void WearItem(int number)
             {
-                //        for (int i = 0; i < storeItemStats.Length; i++)
-                //        {
-                //            if (storeItemName[i] == "창" || storeItemName[i] == "검")
-                //            {
-                //                Console.WriteLine("{0} {1}\t| 공격력 +{2} | {3}G", bonus, storeItemName[i], storeItemStats[i], storeItemGold[i]);
-                //            }
-                //            else { Console.WriteLine("{0} {1}\t| 방어력 +{2} | {3}G", bonus, storeItemName[i], storeItemStats[i], storeItemGold[i]); }
-                //        }
+                name[number] = "[E]" + name[number];
+            }
+        }
+        class ItemStats : Item
+        {
+            Random random = new Random();
+            State state = new State();
+
+            public override void Make()
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    if (name[i].Contains("나무") || name[i].Contains("낡은"))
+                    {
+                        int n = random.Next(1, 3);
+                        stats[i] = n;
+
+                    }
+                    else if (name[i].Contains("청동") || name[i].Contains("무쇠"))
+                    {
+                        int n = random.Next(2 + state.Lv, 5 + state.Lv);
+                        stats[i] = n;
+                    }
+                    else
+                    {
+                        int n = random.Next(5 + state.Lv, 7 + state.Lv);
+                        stats[i] = n;
+                    }
+                }
             }
 
-            public void ViewStoreItem(int number)
+            public void ViewStats()
             {
-                //        for (int i = 0; i < storeItemStats.Length; i++)
-                //        {
-                //            if (storeItemName[i] == "창" || storeItemName[i] == "검")
-                //            {
-                //                Console.WriteLine("{0} {1}\t| 공격력 +{2} | {3}G", i + 1, storeItemName[i], storeItemStats[i], storeItemGold[i]);
-                //            }
-                //            else { Console.WriteLine("{0} {1}\t| 방어력 +{2} | {3}G", i + 1, storeItemName[i], storeItemStats[i], storeItemGold[i]); }
-                //        }
+                for(int i = 0; i < 6; i++)
+                {
+                    if (name[i].Contains("갑옷"))
+                    {
+                        Console.Write("방어력 +{0}", stats[i]);
+                    }
+                    else
+                    {
+                        Console.Write("공격력 +{0}", stats[i]);
+                    }
+                }
+            }
+        }
+        class ItemGold : Item
+        {
+            Random random = new Random();
+            public override void Make()
+            {
+                for (int i = 0; i < 6; i++)
+                {
+                    if (name[i].Contains("나무") || name[i].Contains("낡은"))
+                    {
+                        int n = random.Next(1, 8)*100;
+                        gold[i] = n.ToString();
+                    }
+                    else if (name[i].Contains("청동") || name[i].Contains("무쇠"))
+                    {
+                        int n = random.Next(4, 110)*100;
+                        gold[i] = n.ToString();
+                    }
+                    else
+                    {
+                        int n = random.Next(6,130)*100;
+                        gold[i] = n.ToString();
+                    }
+                }
+            }
+        }
+        class ItemComment : Item
+        {
+            string firstComment;
+            string SecondComment;
+            
+            public override void Make()
+            {
+                for(int i = 0;i < 6; i++)
+                {
+                    if (name[i].Contains("나무"))
+                    {
+                        firstComment = "초보자가 쓰기 좋은 ";
+                    }
+                    else if (name[i].Contains("낡은"))
+                    {
+                        firstComment = "쉽게 볼 수 있는 낡은 ";
+                    }
+                    else if(name[i].Contains("청동"))
+                    {
+                        firstComment = "어디선가 사용됐던거 같은 ";
+                    }
+                    else if (name[i].Contains("무쇠"))
+                    {
+                        firstComment = "무쇠로 만들어져 튼튼한 ";
+                    }
+                    else if (name[i].Contains("스파르타의"))
+                    {
+                        firstComment = "스파리타의 전사들이 사용했다는 전설의 ";
+                    }
+                    else if (name[i].Contains("수련자"))
+                    {
+                        firstComment = "수련에 도움을 주는 ";
+                    }
 
+                    if (name[i].Contains("갑옷"))
+                    {
+                        SecondComment = "갑옷입니다.";
+                    }
+                    else if (name[i].Contains("검"))
+                    {
+                        SecondComment = "검입니다.";
+                    }
+                    else if (name[i].Contains("창"))
+                    {
+                        SecondComment = "창입니다.";
+                    }
+                    else if (name[i].Contains("도끼"))
+                    {
+                        SecondComment = "도끼입니다.";
+                    }
+                    else if (name[i].Contains("망토"))
+                    {
+                        SecondComment = "망토입니다.";
+                    }
+
+                    comment[i] = firstComment + SecondComment;
+                }
             }
         }
     }
