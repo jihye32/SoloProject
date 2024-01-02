@@ -8,12 +8,10 @@ namespace SoloProject
 {
     internal class Program
     {
-        Random random = new Random();
-
         static void Main(string[] args)
         {
             StoreItem item = new StoreItem();
-            item.StoreItemList();
+            item.StoreItemList("-");
             Menu menu = new Menu();
             menu.setMenu();
         }
@@ -59,7 +57,7 @@ namespace SoloProject
 
             public void setMenu()
             {
-                Console.Clear();
+                //Console.Clear();
                 menu2(menu());
             }
         }
@@ -344,20 +342,25 @@ namespace SoloProject
         //    }
         //}
 
-        class StoreItem 
+        class StoreItem
         {
             Item ItemName = new ItemName();
             Item ItemStats = new ItemStats();
             Item ItemGold = new ItemGold();
             Item ItemComment = new ItemComment();
-            int i=0;
-            public void StoreItemList()
+
+            void StoreItemMake()
             {
                 ItemName.Make();
-                for(int i = 0; i < 6; i++)
-                {
-                    Console.WriteLine(ItemName.name[i]);
-                }
+                ItemStats.Make();
+                ItemGold.Make();
+                ItemComment.Make();
+            }
+            
+            public void StoreItemList(string plus)
+            {
+                StoreItemMake();
+                ItemName.List();
             }
         }
 
@@ -367,7 +370,9 @@ namespace SoloProject
             public int[] stats = new int[6];
             public string[] gold = new string[6];
             public string[] comment = new string[6];
+
             public abstract void Make();
+            public abstract void List();
         }
 
         class ItemName : Item
@@ -400,7 +405,7 @@ namespace SoloProject
                             name[i] = firstName[i % 3] + secondName[0];
                         }
                         else { name[i] = firstName[i % 3] + secondName[i % 3]; }
-                        
+
                     }
                     else
                     {
@@ -410,14 +415,27 @@ namespace SoloProject
                         }
                         else { name[i] = firstName[i % 2] + secondName[i % 3]; }
                     }
-                }  
+                }
+            }
+            public override void List()
+            {
+                int itemLength = name.Length;
+                for (int i = 0; i < itemLength ; i++)
+                {
+                    Console.Write(name[i]);
+                }
             }
 
             public void WearItem(int number)
             {
-                name[number] = "[E]" + name[number];
+                if (name[number].Contains("[E]"))
+                {
+                    Console.WriteLine("이미 착용하고 있습니다.");
+                }
+                else { name[number] = "[E]" + name[number]; }                    
             }
         }
+
         class ItemStats : Item
         {
             Random random = new Random();
@@ -425,7 +443,8 @@ namespace SoloProject
 
             public override void Make()
             {
-                for (int i = 0; i < 6; i++)
+                int itemLength = name.Length;
+                for (int i = 0; i < itemLength; i++)
                 {
                     if (name[i].Contains("나무") || name[i].Contains("낡은"))
                     {
@@ -445,10 +464,16 @@ namespace SoloProject
                     }
                 }
             }
+            public override void List()
+            {
+                Console.Write(name);
+            }
+
 
             public void ViewStats()
             {
-                for(int i = 0; i < 6; i++)
+                int itemLength = name.Length;
+                for (int i = 0; i < itemLength; i++)
                 {
                     if (name[i].Contains("갑옷"))
                     {
@@ -466,7 +491,8 @@ namespace SoloProject
             Random random = new Random();
             public override void Make()
             {
-                for (int i = 0; i < 6; i++)
+                int itemLength = name.Length;
+                for (int i = 0; i < itemLength; i++)
                 {
                     if (name[i].Contains("나무") || name[i].Contains("낡은"))
                     {
@@ -485,15 +511,22 @@ namespace SoloProject
                     }
                 }
             }
+            public override void List()
+            {
+                Console.Write(name);
+            }
+
         }
+
         class ItemComment : Item
         {
-            string firstComment;
-            string SecondComment;
+            string firstComment="";
+            string SecondComment="";
             
             public override void Make()
             {
-                for(int i = 0;i < 6; i++)
+                int itemLength = name.Length;
+                for (int i = 0;i < itemLength; i++)
                 {
                     if (name[i].Contains("나무"))
                     {
@@ -544,6 +577,12 @@ namespace SoloProject
                     comment[i] = firstComment + SecondComment;
                 }
             }
+
+            public override void List()
+            {
+                Console.Write(name);
+            }
+
         }
     }
 }
