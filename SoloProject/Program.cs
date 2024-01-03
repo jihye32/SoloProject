@@ -231,48 +231,49 @@ namespace SoloProject
                 Console.WriteLine("\n0. 나가기\n");
                 int n = Number();
                 int InventoryItemLength = itemlist.sellitems.Length;
-                for(int i = 0; i < InventoryItemLength; i++)
+                if (n == 0)
                 {
-                    if (n == 0)
+                    Console.Clear();
+                    ViewInventory();
+                }
+                else if (n > InventoryItemLength || n < 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine("잘못된 입력입니다.\n");
+                    InventoryItemManage();
+                }
+                else
+                {
+                    for (int i = 0; i < InventoryItemLength; i++)
                     {
-                        Console.Clear();
-                        ViewInventory();
-                        break;
-                    }
-                    else if (n - 1 == i)
-                    {
-                        if (itemlist.sellitems[i].name.Contains("E"))
+                        if (n - 1 == i)
                         {
-                            Console.Clear();
-                            Console.WriteLine("이미 장착하고 있는 아이템입니다.\n");
-                            InventoryItemManage();
-                        }
-                        else 
-                        { 
-                            itemlist.sellitems[i].name = "[E]" + itemlist.sellitems[i].name;
-
-                            if(itemlist.sellitems[i].name.Contains("갑옷") || itemlist.sellitems[i].name.Contains("망토"))
+                            if (itemlist.sellitems[i].name.Contains("E"))
                             {
-                                state.PlusDepence = itemlist.sellitems[i].stats;
-                                state.checkDepence = true;
+                                Console.Clear();
+                                Console.WriteLine("이미 장착하고 있는 아이템입니다.\n");
+                                InventoryItemManage();
                             }
-                            else 
-                            { 
-                                state.PlusStrike = itemlist.sellitems[i].stats;
-                                state.checkStrike = true;
+                            else
+                            {
+                                itemlist.sellitems[i].name = "[E]" + itemlist.sellitems[i].name;
+
+                                if (itemlist.sellitems[i].name.Contains("갑옷") || itemlist.sellitems[i].name.Contains("망토"))
+                                {
+                                    state.PlusDepence = itemlist.sellitems[i].stats;
+                                    state.checkDepence = true;
+                                }
+                                else
+                                {
+                                    state.PlusStrike = itemlist.sellitems[i].stats;
+                                    state.checkStrike = true;
+                                }
+                                Console.Clear();
+                                InventoryItemManage();
                             }
-                            Console.Clear();
-                            InventoryItemManage();
                         }
-                    }
-                    else if(n > InventoryItemLength || n < 0)
-                    {
-                        Console.Clear();
-                        Console.WriteLine("잘못된 입력입니다.\n");
-                        InventoryItemManage();
                     }
                 }
-                
             }
 
             public void getClass(ItemList itemlist1, State state1)
@@ -297,10 +298,11 @@ namespace SoloProject
             {
                 Console.WriteLine("상점\n");
                 Console.WriteLine("[보유 골드]\n");
-                Console.WriteLine($"{state.Gold}G");
+                Console.WriteLine($"{state.Gold}");
                 Console.WriteLine("\n[아이템 목록]\n");
                 itemlist.List("-");
                 Console.WriteLine("\n1. 아이템 구매");
+                Console.WriteLine("1. 아이템 판매");
                 Console.WriteLine("0. 나가기\n");
                 int n = Number();
                 if (n == 0)
@@ -311,6 +313,11 @@ namespace SoloProject
                 {
                     Console.Clear();
                     StoreBuy();
+                }
+                else if (n == 2)
+                {
+                    Console.Clear();
+                    StoreSell();
                 }
                 else
                 {
@@ -327,9 +334,10 @@ namespace SoloProject
 
             void StoreBuy()
             {
-                Console.WriteLine($"[보유 골드]\n{state.Gold}G\n");
+                Console.WriteLine("상점 - 아이템 구매\n");
+                Console.WriteLine($"[보유 골드]\n{state.Gold}\n");
+                Console.WriteLine("[아이템 목록]\n");
                 itemlist.List();
-                //아이템 구매한 것은 따로 저장해둘 것. 판매했을 때 대비
                 Console.WriteLine("\n0. 나가기\n");
                 int selectItem = Number();
                 if (selectItem < 0 || selectItem > 6)
@@ -365,6 +373,44 @@ namespace SoloProject
                         Console.Clear();
                         StoreBuy();
                     }
+                }
+            }
+
+            void StoreSell()
+            {
+                Console.WriteLine("상점 - 아이템 판매\n");
+                Console.WriteLine($"[보유 골드]\n{state.Gold}\n");
+                Console.WriteLine("[아이템 목록]\n");
+                itemlist.InventoryItemSellList();
+                Console.WriteLine("\n0. 나가기\n");
+                int n = Number();
+                int InventoryItemLength = itemlist.sellitems.Length;
+                if (n == 0)
+                {
+                    Console.Clear();
+                    ViewStore();
+                }
+                else if (n > InventoryItemLength || n < 0)
+                {
+                    Console.Clear();
+                    Console.WriteLine("잘못된 입력입니다.\n");
+                    StoreSell();
+                }
+                else 
+                {
+                    int i = n - 1;
+                    state.Gold += itemlist.sellitems[i].goldInt;
+                    itemlist.sellitems[i] = null;
+                    for (i = n - 1; i < InventoryItemLength; i++)
+                    {
+                        if (itemlist.sellitems[i + 1] != null)
+                        {
+                            itemlist.sellitems[i] = itemlist.sellitems[i + 1];
+                            itemlist.sellitems[i + 1] = null;
+                        }
+                        else break;
+                    }
+                    StoreSell();
                 }
             }
         }
@@ -422,6 +468,9 @@ namespace SoloProject
                     if (sellitems[i] == null)
                     {
                         sellitems[i] = item;
+                        sellitems[i].goldInt *= 85;
+                        sellitems[i].goldInt /= 100;
+                        sellitems[i].gold = (sellitems[i].goldInt + "G").ToString();
                         check = false;
                     }
                     else if (i > 9)
@@ -468,6 +517,26 @@ namespace SoloProject
                     else
                     {
                         Console.WriteLine($" {i+1}. {sellitems[i].name}\t| 공격력 +{sellitems[i].stats} | {sellitems[i].comment}");
+                    }
+                }
+            }
+
+            public void InventoryItemSellList()
+            {
+                int itemLength = sellitems.Length;
+                for (int i = 0; i < itemLength; i++)
+                {
+                    if (sellitems[i] == null)
+                    {
+                        break;
+                    }
+                    else if (sellitems[i].name.Contains("갑옷") || sellitems[i].name.Contains("망토"))
+                    {
+                        Console.WriteLine($" {i + 1}. {sellitems[i].name}\t| 방어력 +{sellitems[i].stats} | {sellitems[i].gold} | {sellitems[i].comment}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($" {i + 1}. {sellitems[i].name}\t| 공격력 +{sellitems[i].stats} | {sellitems[i].gold} | {sellitems[i].comment}");
                     }
                 }
             }
