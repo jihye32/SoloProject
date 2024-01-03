@@ -356,6 +356,9 @@ namespace SoloProject
                 StoreItemMake();
                 itemlist.List("-");
             }
+        }
+
+        class ItemList
         {
             private Item[] items;
             public void Make(int count)
