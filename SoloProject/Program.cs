@@ -11,11 +11,18 @@ namespace SoloProject
     {
         static void Main(string[] args)
         {
-            Menu menu = new Menu();
-            State state = new State();
-            Inventory inventory = new Inventory();
-            Store store = new Store();
-            ItemList itemList = new ItemList();
+            ClassChain chain = new ClassChain();
+
+            Menu menu = chain.getMenu();
+            State state = chain.getState();
+            Inventory inventory = chain.getInventory();
+            Store store = chain.getStore();
+            ItemList itemList = chain.getItemList();
+            //Menu menu = new Menu();
+            //State state = new State();
+            //Inventory inventory = new Inventory();
+            //Store store = new Store();
+            //ItemList itemList = new ItemList();
 
             //서로 연결시켜주기
             menu.getClass(state, inventory, store);
@@ -26,8 +33,39 @@ namespace SoloProject
 
             while (!gameOver)
             {
+                //chain.getMenu().setMenu();
                 menu.setMenu();
                 gameOver = menu.CheckGameOver();
+            }
+        }
+        
+        class ClassChain
+        {
+            Menu menu = new Menu();
+            State state = new State();
+            Inventory inventory = new Inventory();
+            Store store = new Store();
+            ItemList itemList = new ItemList();
+
+            public Menu getMenu()
+            {
+                return menu;
+            }
+            public State getState()
+            {
+                return state;
+            }
+            public Inventory getInventory()
+            {
+                return inventory;
+            }
+            public Store getStore()
+            {
+                return store;
+            }
+            public ItemList getItemList()
+            {
+                return itemList;
             }
         }
 
