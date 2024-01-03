@@ -2,6 +2,7 @@
 using System.ComponentModel.Design;
 using System.Reflection.Metadata;
 using System.Xml.Linq;
+using static System.Formats.Asn1.AsnWriter;
 using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace SoloProject
@@ -10,29 +11,65 @@ namespace SoloProject
     {
         static void Main(string[] args)
         {
-            StoreItem item = new StoreItem();
-            item.StoreItemList("-");
             Menu menu = new Menu();
-            menu.setMenu();
+            State state = new State();
+            Invetory inventory = new Invetory();
+            Store store = new Store();
+            ItemList itemList = new ItemList();
+
+            //서로 연결시켜주기
+            store.getState(state);
+            store.getItemList(itemList);
+            menu.getClass(state, inventory, store);
+
+            string name;
+            bool gameOver = false;
+
+            while (!gameOver)
+            {
+                menu.setMenu();
+                gameOver = menu.CheckGameOver();
+            }
         }
 
         class Menu
         {
+            State state;
+            Invetory inventory;
+            Store store;
+            bool check = false;
+
             int menu()
             {
-                Console.WriteLine("스파르타 마을에 오신 여러분 환영합니다.");
-                Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
-                Console.WriteLine("1. 상태 보기\n2. 인벤토리\n3. 상점\n");
+                Console.Clear();
+                if (state.name == null)
+                {
+                    Console.WriteLine("스파르타 마을에 오신 여러분 환영합니다.");
+                    Console.WriteLine("스파르타 마을에 입장하기 전에 먼저 이름을 알려주세요.");
+                    state.name = Console.ReadLine();
+                    setFirstState(state.name);
+                    Console.Clear() ;
+                    Console.WriteLine($"{state.name}님 환영합니다. 여긴 스파르타 마을입니다.");
+                    Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
+                    Console.WriteLine("0. 게임 끝내기\n1. 상태 보기\n2. 인벤토리\n3. 상점\n");
+                }
+                else
+                {
+                    Console.WriteLine($"{state.name}님 환영합니다. 여긴 스파르타 마을입니다.");
+                    Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
+                    Console.WriteLine("0. 게임 끝내기\n1. 상태 보기\n2. 인벤토리\n3. 상점\n");
+                }
                 return Number();
             }
+
             void menu2(int n)
             {
-                State state = new State();
-                Invetory inventory = new Invetory();
-               // Store store = new Store();
-
                 switch (n)
                 {
+                    case 0:
+                        //게임 끝내기
+                        check = true;
+                        break;
                     case 1:
                         //상태보기
                         state.ViewState();
@@ -44,21 +81,42 @@ namespace SoloProject
                         break;
                     case 3:
                         //상점
-                        //store.ResetStoreItem();
-                       // store.ViewStore();
+                        store.ResetStoreItem();
+                        store.ViewStore();
                         break;
                     default:
-                        //Console.Clear();
+                        Console.Clear();
                         Console.WriteLine("잘못된 입력입니다.\n");
-                        setMenu();
+                        menu2(menu());
                         break;
                 }
             }
 
+            void setFirstState(string name)
+            {
+                state.Lv = 1;
+                state.name = name;
+                state.Strike = 10;
+                state.Depence = 5;
+                state.HP = 100;
+                state.Gold = 1500;
+            }
+
             public void setMenu()
             {
-                //Console.Clear();
                 menu2(menu());
+            }
+
+            public bool CheckGameOver()
+            {
+                return check;
+            }
+
+            public void getClass(State state1, Invetory inventory1, Store store1)
+            {
+                state = state1;
+                inventory = inventory1;
+                store = store1;
             }
         }
         static int Number()
@@ -72,29 +130,18 @@ namespace SoloProject
             return number;
         }
 
-        class State : Menu
+        class State
         {
-            int lv = 1;
-            public int Lv
-            {
-                get { return lv; }
-                set { lv = value; }
-            }
-            int Strike = 10;
-            int Depence = 5;
-            int HP = 100;
-            int gold = 1500;
-            public int Gold
-            {
-                get { return gold; }
-                set { gold = value; }
-            }
-
-            int PlusStrike { get; set; }
-            int PlusDepence { get; set; }
-
-            bool checkStrike = false;
-            bool checkDepence = false;
+            public int Lv { get; set; }
+            public string name { get; set; }
+            public int Strike { get; set; }
+            public int Depence { get; set; }
+            public int HP { get; set; }
+            public int Gold { get; set; }
+            public int PlusStrike { get; set; }
+            public int PlusDepence { get; set; }
+            bool checkStrike;
+            bool checkDepence;
 
             public void ViewState()
             {
@@ -102,7 +149,7 @@ namespace SoloProject
                 Console.WriteLine("상태보기");
                 Console.WriteLine();
                 Console.WriteLine("LV : 0" + Lv); //10이 넘어갔을 때 값 변경 추가 필요
-                Console.WriteLine("Chad ( 전사 )"); //이름 받아오기.
+                Console.WriteLine($"Chad ( {name} )"); //이름 받아오기.
 
                 if (checkStrike)
                 {
@@ -125,7 +172,6 @@ namespace SoloProject
                 if (n == 0)
                 {
                     Console.Clear();
-                    setMenu();
                 }
                 else
                 {
@@ -135,10 +181,11 @@ namespace SoloProject
             }
         }
 
-        class Invetory : Menu
+        class Invetory
         {
             public void ViewInventory()
             {
+                Console.Clear();
                 Console.WriteLine("인벤토리\n");
                 Console.WriteLine("[아이템 목록]\n");
                 //InventoryItem(0);
@@ -147,7 +194,7 @@ namespace SoloProject
                 int n = Number();
                 if (n == 0)
                 {
-                    setMenu();
+                    Console.Clear();
                 }
                 else if (n == 1)
                 {
@@ -173,60 +220,6 @@ namespace SoloProject
             {
 
             }
-        }
-
-        class Store : Menu
-        {
-            //    public void ViewStore();
-
-            //    public void CreateItem();
-
-            //    public void ResetStoreItem()
-            //    {
-            //        //item.StoreItemCreate();
-            //    }
-            //    //    void StoreBuy()
-            //    //    {
-            //    //        Console.Clear();
-            //    //        Console.WriteLine("[보유 골드]\n{0}G\n", state.Gold);
-            //    //        item.ViewStoreItem(0);
-            //    //        //아이템 구매한 것은 따로 저장해둘 것. 판매했을 때 대비
-            //    //        Console.WriteLine("\n0. 나가기\n");
-            //    //        int selectItem = Number();
-            //    //        if (selectItem < 0 || selectItem > 6)
-            //    //        {
-            //    //            Console.WriteLine("잘못된 입력입니다.\n");
-            //    //            StoreBuy();
-            //    //        }
-            //    //        else if (selectItem == 0)
-            //    //        {
-            //    //            StoreBuy();
-            //    //        }
-            //    //        else
-            //    //        {
-            //    //            //int selectGold = int.Parse(storeItemGold[selectItem - 1]);
-            //    //            //if (storeItemGold[selectItem - 1] == "구매완료")
-            //    //            //{
-            //    //            //    Console.WriteLine("이미 구매하신 상품입니다.");
-            //    //            //    StoreBuy();
-            //    //            //}
-            //    //            //else if (selectGold > Gold)
-            //    //            //{
-            //    //            //    Console.WriteLine("Gold가 부족합니다.");
-            //    //            //    StoreBuy();
-            //    //            //}
-            //    //            //else if (selectGold <= Gold)
-            //    //            //{
-            //    //            //    Gold = Gold - selectGold;
-
-            //    //            //    itemName.Add(storeItemName[selectItem - 1]);
-            //    //            //    itemStats.Add(storeItemStats[selectItem - 1]);
-            //    //            //    itemGold.Add(storeItemGold[selectItem - 1]);
-
-            //    //            //    storeItemGold[selectItem - 1] = "구매완료";
-            //    //            //    StoreBuy();
-            //    //            //}
-            //    //        }
         }
 
 
@@ -342,25 +335,99 @@ namespace SoloProject
         //    }
         //}
 
-        class StoreItem
+        class Store
         {
-            ItemList itemlist = new ItemList();
+            State state;
+            ItemList itemlist;
 
-            void StoreItemMake()
+            public void getState(State state1)
+            {
+                state = state1;
+            }
+            public void getItemList(ItemList itemlist1)
+            {
+                itemlist = itemlist1;
+            }
+
+            public void ViewStore()
+            {
+                Console.Clear();
+                Console.WriteLine("상점\n");
+                Console.WriteLine("[보유 골드]\n");
+                Console.WriteLine($"{state.Gold}G");
+                Console.WriteLine("\n[아이템 목록]\n");
+                itemlist.List("-");
+                Console.WriteLine("\n1. 아이템 구매");
+                Console.WriteLine("0. 나가기\n");
+                int n = Number();
+                if (n == 0)
+                {
+                    Console.Clear();
+                }
+                else if (n == 1)
+                {
+                    StoreBuy();
+                }
+                else
+                {
+                    Console.WriteLine("잘못된 입력입니다.\n");
+                    ViewStore();
+                }
+            }
+
+            public void ResetStoreItem()
             {
                 itemlist.Make(6);
             }
-            
-            public void StoreItemList(string plus)
+
+            void StoreBuy()
             {
-                StoreItemMake();
-                itemlist.List("-");
+                Console.Clear();
+                Console.WriteLine($"[보유 골드]\n{state.Gold}G\n");
+                itemlist.List();
+                //아이템 구매한 것은 따로 저장해둘 것. 판매했을 때 대비
+                Console.WriteLine("\n0. 나가기\n");
+                int selectItem = Number();
+                if (selectItem < 0 || selectItem > 6)
+                {
+                    Console.WriteLine("잘못된 입력입니다.\n");
+                    StoreBuy();
+                }
+                else if (selectItem == 0)
+                {
+                    ViewStore();
+                }
+                else
+                {
+                    int selectgold = itemlist.items[selectItem - 1].goldInt;
+                    if (itemlist.items[selectItem - 1].gold == "구매완료")
+                    {
+                        Console.WriteLine("이미 구매하신 상품입니다.");
+                        StoreBuy();
+                    }
+                    else if (selectgold > state.Gold)
+                    {
+                        Console.WriteLine("Gold가 부족합니다.");
+                        StoreBuy();
+                    }
+                    else if (selectgold <= state.Gold)
+                    {
+                        state.Gold = state.Gold - selectgold;
+
+                        itemlist.items[selectItem - 1].gold = "구매완료";
+                        itemlist.Sellitem(itemlist.items[selectItem - 1]);
+                        StoreBuy();
+                    }
+                }
             }
         }
 
         class ItemList
         {
-            private Item[] items;
+            public Item[] items;
+            public Item[] sellitem;
+            int i = 0;
+
             public void Make(int count)
             {
                 items = new Item[count];
@@ -376,13 +443,34 @@ namespace SoloProject
                 {
                     if(items[i].name.Contains("갑옷")|| items[i].name.Contains("망토"))
                     {
-                        Console.WriteLine($"{plus} {items[i].name}\t| 방어력 +{items[i].stats} | {items[i].gold}G | {items[i].comment}");
+                        Console.WriteLine($"{plus} {items[i].name}\t| 방어력 +{items[i].stats} | {items[i].gold} | {items[i].comment}");
                     }
                     else
                     {
-                        Console.WriteLine($"{plus} {items[i].name}\t| 공격력 +{items[i].stats} | {items[i].gold}G | {items[i].comment}");
+                        Console.WriteLine($"{plus} {items[i].name}\t| 공격력 +{items[i].stats} | {items[i].gold} | {items[i].comment}");
                     }  
                 }
+            }
+            public void List()
+            {
+                int itemLength = items.Length;
+                for (int i = 0; i < itemLength; i++)
+                {
+                    if (items[i].name.Contains("갑옷") || items[i].name.Contains("망토"))
+                    {
+                        Console.WriteLine($"{i+1} {items[i].name}\t| 방어력 +{items[i].stats} | {items[i].gold} | {items[i].comment}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{i+1} {items[i].name}\t| 공격력 +{items[i].stats} | {items[i].gold} | {items[i].comment}");
+                    }
+                }
+            }
+
+            public void Sellitem(Item item)
+            {
+                sellitem[i] = item;
+                i++;
             }
         }
 
@@ -396,6 +484,7 @@ namespace SoloProject
             public int stats=0;
             public string gold="";
             public string comment="";
+            public int goldInt=0;
             private string[] firstName = { "나무", "낡은 ", "수련자", "청동", "무쇠", "스파트라의 " };
             private string[] secondName = { "갑옷", "망토", "검", "창", "도끼"};
             private string firstComment = "";
@@ -473,23 +562,23 @@ namespace SoloProject
             {
                 if (name.Contains("나무") || name.Contains("낡은"))
                 {
-                    int n = random1.Next(1, 5) * 100;
-                    gold = n.ToString();
+                    goldInt = random1.Next(1, 5) * 100;
+                    gold = goldInt.ToString()+"G";
                 }
                 else if (name.Contains("청동") || name.Contains("수련자"))
                 {
-                    int n = random1.Next(4, 8) * 100;
-                    gold = n.ToString();
+                    goldInt = random1.Next(4, 8) * 100;
+                    gold = goldInt.ToString() + "G";
                 }
                 else if (name.Contains("무쇠"))
                 {
-                    int n = random1.Next(5, 11) * 100;
-                    gold = n.ToString();
+                    goldInt = random1.Next(5, 11) * 100;
+                    gold = goldInt.ToString() + "G";
                 }
                 else
                 {
-                    int n = random1.Next(6, 13) * 100;
-                    gold = n.ToString();
+                    goldInt = random1.Next(6, 13) * 100;
+                    gold = goldInt.ToString() + "G";
                 }
             }
             void MakeCommand() 
