@@ -19,7 +19,7 @@ namespace SoloProject
 
             //서로 연결시켜주기
             menu.getClass(state, inventory, store);
-            inventory.getClass(itemList);
+            inventory.getClass(itemList, state);
             store.getClass(state, itemList);
 
             bool gameOver = false;
@@ -71,6 +71,7 @@ namespace SoloProject
                         break;
                     case 1:
                         //상태보기
+                        Console.Clear();
                         state.ViewState();
                         break;
                     case 2:
@@ -80,6 +81,7 @@ namespace SoloProject
                         break;
                     case 3:
                         //상점
+                        Console.Clear();
                         store.ResetStoreItem();
                         store.ViewStore();
                         break;
@@ -139,8 +141,8 @@ namespace SoloProject
             public int Gold { get; set; }
             public int PlusStrike { get; set; }
             public int PlusDepence { get; set; }
-            bool checkStrike;
-            bool checkDepence;
+            public bool checkStrike = false;
+            public bool checkDepence = false;
 
             public void ViewState()
             {
@@ -152,12 +154,14 @@ namespace SoloProject
 
                 if (checkStrike)
                 {
+                    Strike += PlusStrike;
                     Console.WriteLine("공격력 : {0} (+{1})", Strike, PlusStrike);
                 }
                 else Console.WriteLine("공격력 : {0}", Strike);
 
                 if (checkDepence)
                 {
+                    Depence += PlusDepence;
                     Console.WriteLine("방어력 : {0} (+{1})", Depence, PlusDepence);
                 }
                 else Console.WriteLine("방어력 : {0}", Depence);
@@ -182,13 +186,14 @@ namespace SoloProject
 
         class Inventory
         {
-            protected ItemList itemlist;
+            ItemList itemlist;
+            State state;
+
             public void ViewInventory()
             {
-                Console.Clear();
                 Console.WriteLine("인벤토리\n");
                 Console.WriteLine("[아이템 목록]\n");
-                //InventoryItem(0);
+                itemlist.InventoryItemList("-");
                 Console.WriteLine("\n1. 장착관리");
                 Console.WriteLine("0. 나가기\n");
                 int n = Number();
@@ -198,113 +203,84 @@ namespace SoloProject
                 }
                 else if (n == 1)
                 {
-                    if (itemlist.sellitem == null)
+                    if (itemlist.sellitems[0] == null)
                     {
                         Console.Clear();
-                        Console.WriteLine("보유 중인 아이템이 없습니다.");
+                        Console.WriteLine("보유 중인 아이템이 없습니다.\n");
                         ViewInventory();
                     }
                     else
                     {
-                        InventoryItemList();
+                        Console.Clear();
+                        InventoryItemManage();
                     }
                 }
                 else
                 {
+                    Console.Clear();
                     Console.WriteLine("잘못된 입력입니다.\n");
                     ViewInventory();
                 }
             }
-            void InventoryItemList()
+
+            void InventoryItemManage()
             {
-                //itemlist.List("-", itemlist.sellitem);
+                Console.WriteLine("인벤토리 - 장착 관리\n");
+                Console.WriteLine("[아이템 목록]\n");
+                itemlist.InventoryItemList();
+                Console.WriteLine("\n0. 나가기\n");
+                int n = Number();
+                int InventoryItemLength = itemlist.sellitems.Length;
+                for(int i = 0; i < InventoryItemLength; i++)
+                {
+                    if (n == 0)
+                    {
+                        Console.Clear();
+                        ViewInventory();
+                        break;
+                    }
+                    else if (n - 1 == i)
+                    {
+                        if (itemlist.sellitems[i].name.Contains("E"))
+                        {
+                            Console.Clear();
+                            Console.WriteLine("이미 장착하고 있는 아이템입니다.\n");
+                            InventoryItemManage();
+                        }
+                        else 
+                        { 
+                            itemlist.sellitems[i].name = "[E]" + itemlist.sellitems[i].name;
+
+                            if(itemlist.sellitems[i].name.Contains("갑옷") || itemlist.sellitems[i].name.Contains("망토"))
+                            {
+                                state.PlusDepence = itemlist.sellitems[i].stats;
+                                state.checkDepence = true;
+                            }
+                            else 
+                            { 
+                                state.PlusStrike = itemlist.sellitems[i].stats;
+                                state.checkStrike = true;
+                            }
+                            Console.Clear();
+                            InventoryItemManage();
+                        }
+                    }
+                    else if(n > InventoryItemLength || n < 0)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("잘못된 입력입니다.\n");
+                        InventoryItemManage();
+                    }
+                }
+                
             }
 
-            public void getClass(ItemList itemlist1)
+            public void getClass(ItemList itemlist1, State state1)
             {
                 itemlist = itemlist1;
+                state = state1;
             }
         }
-
-
-        //static void InventoryItem(int n)
-        //{
-        //    switch (n)
-        //    {
-        //        //아이템 보여주기
-        //        case 0:
-        //            if (itemName == null)
-        //            {
-        //                break;
-        //            }
-        //            else
-        //            {
-        //                for (int i = 0; i < itemName.Count; i++)
-        //                {
-        //                    if (itemName[i] == "창" || itemName[i] == "검")
-        //                    {
-        //                        Console.WriteLine("- {0}\t| 공격력 + {1} |", itemName[i], itemStats[i]);
-        //                    }
-        //                    else
-        //                    {
-        //                        Console.WriteLine("- {0}\t| 방어력 + {1} |", itemName[i], itemStats[i]);
-        //                    }
-        //                }
-        //            }
-        //            break;
-        //        //아이템 착용 시 [E] 추가
-        //        case 1:
-        //            Console.WriteLine("인벤토리 - 장착 관리\n");
-        //            Console.WriteLine("[아이템 목록]\n");
-        //            for (int i = 0; i < itemName.Count; i++)
-        //            {
-        //                if (itemName[i] == "창" || itemName[i] == "검")
-        //                {
-        //                    Console.WriteLine("{0} {1}\t| 공격력 + {2} |", i + 1, itemName[i], itemStats[i]);
-        //                }
-        //                else
-        //                {
-        //                    Console.WriteLine("{0} {1}\t| 방어력 + {2} |", i + 1, itemName[i], itemStats[i]);
-        //                }
-        //            }
-        //            Console.WriteLine("\n0. 나가기\n");
-        //            int number = Number();
-        //            for (int i = 0; i < itemName.Count; i++)
-        //            {
-        //                if (number < 0 || number > itemName.Count)
-        //                {
-        //                    Console.WriteLine("잘못된 입력입니다.\n");
-        //                    InventoryItem(1);
-        //                }
-        //                else if (number == 0)
-        //                {
-        //                    Inventory(2);
-        //                }
-        //                else if (i + 1 == number)
-        //                {
-        //                    if (itemName[i] == "갑옷")
-        //                    {
-        //                        PlusDepence = int.Parse(itemStats[i]);
-        //                        Depence += PlusDepence;
-        //                        checkDepence = true;
-        //                    }
-        //                    else
-        //                    {
-        //                        PlusStrike = int.Parse(itemStats[i]);
-        //                        Strike += PlusStrike;
-        //                        checkStrike = true;
-        //                    }
-        //                    string name = "[E]" + itemName[i];
-        //                    itemName[i] = name;
-        //                }
-        //            }
-        //            InventoryItem(1);
-        //            break;
-        //        //착용된 아이템 값을 상태 값에 추가
-        //        case 2:
-        //            break;
-        //    }
-        //}
 
         class Store
         {
@@ -319,7 +295,6 @@ namespace SoloProject
 
             public void ViewStore()
             {
-                Console.Clear();
                 Console.WriteLine("상점\n");
                 Console.WriteLine("[보유 골드]\n");
                 Console.WriteLine($"{state.Gold}G");
@@ -334,10 +309,12 @@ namespace SoloProject
                 }
                 else if (n == 1)
                 {
+                    Console.Clear();
                     StoreBuy();
                 }
                 else
                 {
+                    Console.Clear();
                     Console.WriteLine("잘못된 입력입니다.\n");
                     ViewStore();
                 }
@@ -350,7 +327,6 @@ namespace SoloProject
 
             void StoreBuy()
             {
-                Console.Clear();
                 Console.WriteLine($"[보유 골드]\n{state.Gold}G\n");
                 itemlist.List();
                 //아이템 구매한 것은 따로 저장해둘 것. 판매했을 때 대비
@@ -358,11 +334,13 @@ namespace SoloProject
                 int selectItem = Number();
                 if (selectItem < 0 || selectItem > 6)
                 {
+                    Console.Clear();
                     Console.WriteLine("잘못된 입력입니다.\n");
                     StoreBuy();
                 }
                 else if (selectItem == 0)
                 {
+                    Console.Clear();
                     ViewStore();
                 }
                 else
@@ -384,6 +362,7 @@ namespace SoloProject
 
                         itemlist.items[selectItem - 1].gold = "구매완료";
                         itemlist.Sellitem(itemlist.items[selectItem - 1]);
+                        Console.Clear();
                         StoreBuy();
                     }
                 }
@@ -393,7 +372,7 @@ namespace SoloProject
         class ItemList
         {
             public Item[] items;
-            public Item[] sellitem = new Item[10];
+            public Item[] sellitems = new Item[10];
 
             public void Make(int count)
             {
@@ -425,11 +404,11 @@ namespace SoloProject
                 {
                     if (items[i].name.Contains("갑옷") || items[i].name.Contains("망토"))
                     {
-                        Console.WriteLine($"{i+1} {items[i].name}\t| 방어력 +{items[i].stats} | {items[i].gold} | {items[i].comment}");
+                        Console.WriteLine($" {i+1}. {items[i].name}\t| 방어력 +{items[i].stats} | {items[i].gold} | {items[i].comment}");
                     }
                     else
                     {
-                        Console.WriteLine($"{i+1} {items[i].name}\t| 공격력 +{items[i].stats} | {items[i].gold} | {items[i].comment}");
+                        Console.WriteLine($" {i+1}. {items[i].name}\t| 공격력 +{items[i].stats} | {items[i].gold} | {items[i].comment}");
                     }
                 }
             }
@@ -440,9 +419,9 @@ namespace SoloProject
                 int i = 0;
                 while (check)
                 {
-                    if (sellitem[i] == null)
+                    if (sellitems[i] == null)
                     {
-                        sellitem[i] = item;
+                        sellitems[i] = item;
                         check = false;
                     }
                     else if (i > 9)
@@ -451,6 +430,45 @@ namespace SoloProject
                         break;
                     }
                     else { i++; }
+                }
+            }
+
+            public void InventoryItemList(string plus)
+            {
+                int itemLength = sellitems.Length;
+                for (int i = 0; i < itemLength; i++)
+                {
+                    if (sellitems[i] == null)
+                    {
+                        break;
+                    }
+                    else if (sellitems[i].name.Contains("갑옷") || sellitems[i].name.Contains("망토"))
+                    {
+                        Console.WriteLine($"{plus} {sellitems[i].name}\t| 방어력 +{sellitems[i].stats} | {sellitems[i].comment}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{plus} {sellitems[i].name}\t| 공격력 +{sellitems[i].stats} | {sellitems[i].comment}");
+                    }
+                }
+            }
+            public void InventoryItemList()
+            {
+                int itemLength = sellitems.Length;
+                for (int i = 0; i < itemLength; i++)
+                {
+                    if (sellitems[i] == null)
+                    {
+                        break;
+                    }
+                    else if (sellitems[i].name.Contains("갑옷") || sellitems[i].name.Contains("망토"))
+                    {
+                        Console.WriteLine($" {i+1}. {sellitems[i].name}\t| 방어력 +{sellitems[i].stats} | {sellitems[i].comment}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($" {i+1}. {sellitems[i].name}\t| 공격력 +{sellitems[i].stats} | {sellitems[i].comment}");
+                    }
                 }
             }
         }
