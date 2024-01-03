@@ -13,16 +13,15 @@ namespace SoloProject
         {
             Menu menu = new Menu();
             State state = new State();
-            Invetory inventory = new Invetory();
+            Inventory inventory = new Inventory();
             Store store = new Store();
             ItemList itemList = new ItemList();
 
             //서로 연결시켜주기
-            store.getState(state);
-            store.getItemList(itemList);
             menu.getClass(state, inventory, store);
+            inventory.getClass(itemList);
+            store.getClass(state, itemList);
 
-            string name;
             bool gameOver = false;
 
             while (!gameOver)
@@ -35,7 +34,7 @@ namespace SoloProject
         class Menu
         {
             State state;
-            Invetory inventory;
+            Inventory inventory;
             Store store;
             bool check = false;
 
@@ -112,7 +111,7 @@ namespace SoloProject
                 return check;
             }
 
-            public void getClass(State state1, Invetory inventory1, Store store1)
+            public void getClass(State state1, Inventory inventory1, Store store1)
             {
                 state = state1;
                 inventory = inventory1;
@@ -181,8 +180,9 @@ namespace SoloProject
             }
         }
 
-        class Invetory
+        class Inventory
         {
+            protected ItemList itemlist;
             public void ViewInventory()
             {
                 Console.Clear();
@@ -198,16 +198,16 @@ namespace SoloProject
                 }
                 else if (n == 1)
                 {
-                    //if (name == null)
-                    //{
-                    //    Console.Clear();
-                    //    Console.WriteLine("보유 중인 아이템이 없습니다.");
-                    //    ViewInventory();
-                    //}
-                    //else
-                    //{
-                    //    InventoryItem(1);
-                    //}
+                    if (itemlist.sellitem == null)
+                    {
+                        Console.Clear();
+                        Console.WriteLine("보유 중인 아이템이 없습니다.");
+                        ViewInventory();
+                    }
+                    else
+                    {
+                        InventoryItemList();
+                    }
                 }
                 else
                 {
@@ -215,46 +215,17 @@ namespace SoloProject
                     ViewInventory();
                 }
             }
-
-            void InventoryItem()
+            void InventoryItemList()
             {
+                //itemlist.List("-", itemlist.sellitem);
+            }
 
+            public void getClass(ItemList itemlist1)
+            {
+                itemlist = itemlist1;
             }
         }
 
-
-        class InventoryItem : Invetory
-        {
-            //struct item
-            //{
-            //    public string name;
-            //    string stats;
-            //    int gold;
-            //    string comment;
-            //}
-
-            //public void ViewInventoryItem()
-            //{
-            //    if (name == null)
-            //    {
-            //        break;
-            //    }
-            //    else
-            //    {
-            //        for (int i = 0; i < itemName.Count; i++)
-            //        {
-            //            if (itemName[i] == "창" || itemName[i] == "검")
-            //            {
-            //                Console.WriteLine("- {0}\t| 공격력 + {1} |", itemName[i], itemStats[i]);
-            //            }
-            //            else
-            //            {
-            //                Console.WriteLine("- {0}\t| 방어력 + {1} |", itemName[i], itemStats[i]);
-            //            }
-            //        }
-            //    }
-            //}
-        }
 
         //static void InventoryItem(int n)
         //{
@@ -340,12 +311,9 @@ namespace SoloProject
             State state;
             ItemList itemlist;
 
-            public void getState(State state1)
+            public void getClass(State state1, ItemList itemlist1)
             {
                 state = state1;
-            }
-            public void getItemList(ItemList itemlist1)
-            {
                 itemlist = itemlist1;
             }
 
@@ -425,8 +393,7 @@ namespace SoloProject
         class ItemList
         {
             public Item[] items;
-            public Item[] sellitem;
-            int i = 0;
+            public Item[] sellitem = new Item[10];
 
             public void Make(int count)
             {
@@ -469,8 +436,22 @@ namespace SoloProject
 
             public void Sellitem(Item item)
             {
-                sellitem[i] = item;
-                i++;
+                bool check = true;
+                int i = 0;
+                while (check)
+                {
+                    if (sellitem[i] == null)
+                    {
+                        sellitem[i] = item;
+                        check = false;
+                    }
+                    else if (i > 9)
+                    {
+                        Console.WriteLine("가득 찼습니다.");
+                        break;
+                    }
+                    else { i++; }
+                }
             }
         }
 
@@ -511,26 +492,26 @@ namespace SoloProject
                 {
                     if (nn < 5)
                     {
-                        name = firstName[nnn % secondLength] + secondName[nnn % 2];
+                        name = firstName[nnn % firstLength] + secondName[nnn % 2];
                     }
-                    else { name = firstName[nnn % secondLength] + secondName[nnn % firstLength]; }
+                    else { name = firstName[nnn % firstLength] + secondName[nnn % secondLength]; }
 
                 }
                 else if (n < 8)
                 {
                     if (nn < 5)
                     {
-                        name = firstName[nnn % 5] + secondName[nnn % firstLength];
+                        name = firstName[nnn % 5] + secondName[nnn % secondLength];
                     }
-                    else { name = firstName[nnn % 3] + secondName[nnn % firstLength]; }
+                    else { name = firstName[nnn % 3] + secondName[nnn % secondLength]; }
                 }
                 else
                 {
                     if (nn < 5)
                     {
-                        name = firstName[nnn % 3] + secondName[nnn % firstLength];
+                        name = firstName[nnn % 3] + secondName[nnn % secondLength];
                     }
-                    else { name = firstName[nnn % 2] + secondName[nnn % firstLength]; }
+                    else { name = firstName[nnn % 2] + secondName[nnn % secondLength]; }
                 }
             }
 
