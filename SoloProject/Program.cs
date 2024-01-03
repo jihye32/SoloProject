@@ -344,26 +344,42 @@ namespace SoloProject
 
         class StoreItem
         {
-            Item item = new Item();
-            //Item itemname = new ItemName();
-            //Item ItemStats = new ItemStats();
-            //Item ItemGold = new ItemGold();
-            //Item ItemComment = new ItemComment();
+            ItemList itemlist = new ItemList();
 
             void StoreItemMake()
             {
-                item.Make();
-                
-                //itemname.Make();
-                //ItemStats.Make();
-                //ItemGold.Make();
-                //ItemComment.Make();
+                itemlist.Make(6);
             }
             
             public void StoreItemList(string plus)
             {
                 StoreItemMake();
-                item.List("-");
+                itemlist.List("-");
+            }
+        {
+            private Item[] items;
+            public void Make(int count)
+            {
+                items = new Item[count];
+                for(int i = 0; i < count; i++)
+                {
+                    items[i] = new Item();
+                }
+            }
+            public void List(string plus)
+            {
+                int itemLength = items.Length;
+                for (int i = 0; i < itemLength; i++)
+                {
+                    if(items[i].name.Contains("갑옷")|| items[i].name.Contains("망토"))
+                    {
+                        Console.WriteLine($"{plus} {items[i].name}\t| 방어력 +{items[i].stats} | {items[i].gold}G | {items[i].comment}");
+                    }
+                    else
+                    {
+                        Console.WriteLine($"{plus} {items[i].name}\t| 공격력 +{items[i].stats} | {items[i].gold}G | {items[i].comment}");
+                    }  
+                }
             }
         }
 
@@ -372,157 +388,17 @@ namespace SoloProject
             State state = new State();
             
             Random random1 = new Random();
-            Random random2 = new Random();
 
-            public string[] name = new string[6];
-            public int[] stats = new int[6];
-            public string[] gold = new string[6];
-            public string[] comment = new string[6];
-            string[] firstName = { "나무", "낡은 ", "청동", "무쇠", "스파트라의 " };
-            string[] secondName = { "갑옷", "검", "창" };
-            string firstComment = "";
-            string SecondComment = "";
+            public string name="";
+            public int stats=0;
+            public string gold="";
+            public string comment="";
+            private string[] firstName = { "나무", "낡은 ", "수련자", "청동", "무쇠", "스파트라의 " };
+            private string[] secondName = { "갑옷", "망토", "검", "창", "도끼"};
+            private string firstComment = "";
+            private string SecondComment = "";
 
-
-            void MakeName() 
-            {
-                int itemLength = name.Length;
-                for (int i = 0; i < itemLength; i++)
-                {
-                    int n = random1.Next(10);
-                    int nn = random2.Next(10);
-                    if (n < 5)
-                    {
-                        if (nn < 5)
-                        {
-                            name[i] = firstName[i % 5] + secondName[0];
-                        }
-                        else { name[i] = firstName[i % 5] + secondName[i % 3]; }
-
-                    }
-                    else if (n < 8)
-                    {
-                        if (nn < 5)
-                        {
-                            name[i] = firstName[i % 3] + secondName[0];
-                        }
-                        else { name[i] = firstName[i % 3] + secondName[i % 3]; }
-                    }
-                    else
-                    {
-                        if (nn < 5)
-                        {
-                            name[i] = firstName[i % 3] + secondName[0];
-                        }
-                        else { name[i] = firstName[i % 2] + secondName[i % 3]; }
-                    }
-
-                }
-            }
-            void MakeStats() 
-            {
-                int itemLength = name.Length;
-                for (int i = 0; i < itemLength; i++)
-                {
-                    if (name[i].Contains("나무") || name[i].Contains("낡은"))
-                    {
-                        int n = random1.Next(1, 3);
-                        stats[i] = n;
-
-                    }
-                    else if (name[i].Contains("청동") || name[i].Contains("무쇠"))
-                    {
-                        int n = random1.Next(2 + state.Lv, 5 + state.Lv);
-                        stats[i] = n;
-                    }
-                    else
-                    {
-                        int n = random1.Next(5 + state.Lv, 7 + state.Lv);
-                        stats[i] = n;
-                    }
-                }
-            }
-            void MakeGold() 
-            {
-                int itemLength = name.Length;
-                for (int i = 0; i < itemLength; i++)
-                {
-                    if (name[i].Contains("나무") || name[i].Contains("낡은"))
-                    {
-                        //int n = random1.Next(1, 5) * 100;
-                        int n = 100;
-                        gold[i] = n.ToString();
-                    }
-                    else if (name[i].Contains("청동") || name[i].Contains("무쇠"))
-                    {
-                        //int n = random1.Next(4, 11) * 100;
-                        int n = 500;
-                        gold[i] = n.ToString();
-                    }
-                    else
-                    {
-                        //int n = random1.Next(6, 13) * 100;
-                        int n = 1000;
-                        gold[i] = n.ToString();
-                    }
-                }
-            }
-            void MakeCommand() 
-            {
-                int itemLength = name.Length;
-                for (int i = 0; i < itemLength; i++)
-                {
-                    if (name[i].Contains("나무"))
-                    {
-                        firstComment = "초보자가 쓰기 좋은 ";
-                    }
-                    else if (name[i].Contains("낡은"))
-                    {
-                        firstComment = "쉽게 볼 수 있는 낡은 ";
-                    }
-                    else if (name[i].Contains("청동"))
-                    {
-                        firstComment = "어디선가 사용됐던거 같은 ";
-                    }
-                    else if (name[i].Contains("무쇠"))
-                    {
-                        firstComment = "무쇠로 만들어져 튼튼한 ";
-                    }
-                    else if (name[i].Contains("스파"))
-                    {
-                        firstComment = "스파르타의 전사들이 사용했다는 전설의 ";
-                    }
-                    else if (name[i].Contains("수련자"))
-                    {
-                        firstComment = "수련에 도움을 주는 ";
-                    }
-
-                    if (name[i].Contains("갑옷"))
-                    {
-                        SecondComment = "갑옷입니다.";
-                    }
-                    else if (name[i].Contains("검"))
-                    {
-                        SecondComment = "검입니다.";
-                    }
-                    else if (name[i].Contains("창"))
-                    {
-                        SecondComment = "창입니다.";
-                    }
-                    else if (name[i].Contains("도끼"))
-                    {
-                        SecondComment = "도끼입니다.";
-                    }
-                    else if (name[i].Contains("망토"))
-                    {
-                        SecondComment = "망토입니다.";
-                    }
-
-                    comment[i] = firstComment + SecondComment;
-                }
-            }
-
-            public void Make()
+            public Item()
             {
                 MakeName();
                 MakeStats();
@@ -530,227 +406,146 @@ namespace SoloProject
                 MakeCommand();
             }
 
-            public void List(string plus) 
+            void MakeName() 
+            {
+                int n = random1.Next(10);
+                int nn = random1.Next(10);
+                int nnn = random1.Next(10);
+
+                int firstLength = firstName.Length;
+                int secondLength = secondName.Length;
+
+                if (n < 5)
+                {
+                    if (nn < 5)
+                    {
+                        name = firstName[nnn % secondLength] + secondName[nnn % 2];
+                    }
+                    else { name = firstName[nnn % secondLength] + secondName[nnn % firstLength]; }
+
+                }
+                else if (n < 8)
+                {
+                    if (nn < 5)
+                    {
+                        name = firstName[nnn % 5] + secondName[nnn % firstLength];
+                    }
+                    else { name = firstName[nnn % 3] + secondName[nnn % firstLength]; }
+                }
+                else
+                {
+                    if (nn < 5)
+                    {
+                        name = firstName[nnn % 3] + secondName[nnn % firstLength];
+                    }
+                    else { name = firstName[nnn % 2] + secondName[nnn % firstLength]; }
+                }
+            }
+
+            void MakeStats() 
+            {
+                if (name.Contains("나무") || name.Contains("낡은"))
+                {
+                    int n = random1.Next(1, 3);
+                    stats = n;
+
+                }
+                else if (name.Contains("청동") || name.Contains("수련자"))
+                {
+                    int n = random1.Next(2 + state.Lv, 5 + state.Lv);
+                    stats = n;
+                }
+                else if(name.Contains("무쇠"))
+                {
+                    int n = random1.Next(4 + state.Lv, 7 + state.Lv);
+                    stats = n;
+                }
+                else
+                {
+                    int n = random1.Next(6 + state.Lv, 8 + state.Lv);
+                    stats = n;
+                }
+            }
+            void MakeGold() 
+            {
+                if (name.Contains("나무") || name.Contains("낡은"))
+                {
+                    int n = random1.Next(1, 5) * 100;
+                    gold = n.ToString();
+                }
+                else if (name.Contains("청동") || name.Contains("수련자"))
+                {
+                    int n = random1.Next(4, 8) * 100;
+                    gold = n.ToString();
+                }
+                else if (name.Contains("무쇠"))
+                {
+                    int n = random1.Next(5, 11) * 100;
+                    gold = n.ToString();
+                }
+                else
+                {
+                    int n = random1.Next(6, 13) * 100;
+                    gold = n.ToString();
+                }
+            }
+            void MakeCommand() 
             {
                 int itemLength = name.Length;
                 for (int i = 0; i < itemLength; i++)
                 {
-                    Console.WriteLine("{0} {1}\t| +{2} | {3}G | {4}", plus, name[i], stats[i], gold[i], comment[i]);
+                    if (name.Contains("나무"))
+                    {
+                        firstComment = "초보자가 쓰기 좋은 ";
+                    }
+                    else if (name.Contains("낡은"))
+                    {
+                        firstComment = "쉽게 볼 수 있는 낡은 ";
+                    }
+                    else if (name.Contains("청동"))
+                    {
+                        firstComment = "어디선가 사용됐던거 같은 ";
+                    }
+                    else if (name.Contains("무쇠"))
+                    {
+                        firstComment = "무쇠로 만들어져 튼튼한 ";
+                    }
+                    else if (name.Contains("스파"))
+                    {
+                        firstComment = "스파르타의 전사들이 사용했다는 전설의 ";
+                    }
+                    else if (name.Contains("수련자"))
+                    {
+                        firstComment = "수련에 도움을 주는 ";
+                    }
+
+                    if (name.Contains("갑옷"))
+                    {
+                        SecondComment = "갑옷입니다.";
+                    }
+                    else if (name.Contains("검"))
+                    {
+                        SecondComment = "검입니다.";
+                    }
+                    else if (name.Contains("창"))
+                    {
+                        SecondComment = "창입니다.";
+                    }
+                    else if (name.Contains("도끼"))
+                    {
+                        SecondComment = "도끼입니다.";
+                    }
+                    else if (name.Contains("망토"))
+                    {
+                        SecondComment = "망토입니다.";
+                    }
+
+                    comment = firstComment + SecondComment;
                 }
             }
-        }
 
-        //class ItemName : Item
-        //{
-        //    Random random1 = new Random();
-        //    Random random2 = new Random();
-
-        //    string[] firstName = {"나무", "낡은 ", "청동", "무쇠", "스파트라의 "};
-        //    string[] secondName = { "갑옷", "검", "창"};
-
-        //    public override string Make()
-        //    {
-        //        int itemLength = name.Length;
-        //        for (int i = 0; i < itemLength; i++)
-        //        {
-        //            int n = random1.Next(10);
-        //            int nn = random2.Next(10);
-        //            if (n < 5)
-        //            {
-        //                if (nn < 5)
-        //                {
-        //                    name[i] = firstName[i % 5] + secondName[0];
-        //                }
-        //                else { name[i] = firstName[i % 5] + secondName[i % 3]; }
-
-        //            }
-        //            else if (n < 8)
-        //            {
-        //                if (nn < 5)
-        //                {
-        //                    name[i] = firstName[i % 3] + secondName[0];
-        //                }
-        //                else { name[i] = firstName[i % 3] + secondName[i % 3]; }
-        //            }
-        //            else
-        //            {
-        //                if (nn < 5)
-        //                {
-        //                    name[i] = firstName[i % 3] + secondName[0];
-        //                }
-        //                else { name[i] = firstName[i % 2] + secondName[i % 3]; }
-        //            }
-                    
-        //        }
-        //        return name[0];
-        //    }
-        //    public override void List()
-        //    {
-        //        int itemLength = name.Length;
-        //        for (int i = 0; i < itemLength ; i++)
-        //        {
-        //            Console.Write(name[i]);
-        //        }
-        //    }
-
-        //    public void WearItem(int number)
-        //    {
-        //        if (name[number].Contains("[E]"))
-        //        {
-        //            Console.WriteLine("이미 착용하고 있습니다.");
-        //        }
-        //        else { name[number] = "[E]" + name[number]; }                    
-        //    }
-        //}
-
-        //class ItemStats : Item
-        //{
-        //    Random random = new Random();
-        //    State state = new State();
-
-        //    public void Make()
-        //    {
-        //        int itemLength = name.Length;
-        //        for (int i = 0; i < itemLength; i++)
-        //        {
-        //            if (name[i].Contains("나무") || name[i].Contains("낡은"))
-        //            {
-        //                int n = random.Next(1, 3);
-        //                stats[i] = n;
-
-        //            }
-        //            else if (name[i].Contains("청동") || name[i].Contains("무쇠"))
-        //            {
-        //                int n = random.Next(2 + state.Lv, 5 + state.Lv);
-        //                stats[i] = n;
-        //            }
-        //            else
-        //            {
-        //                int n = random.Next(5 + state.Lv, 7 + state.Lv);
-        //                stats[i] = n;
-        //            }
-        //        }      
-        //    }
-        //    public override void List()
-        //    {
-        //        Console.Write(name);
-        //    }
-
-
-        //    public void ViewStats()
-        //    {
-        //        int itemLength = name.Length;
-        //        for (int i = 0; i < itemLength; i++)
-        //        {
-        //            if (name[i].Contains("갑옷"))
-        //            {
-        //                Console.Write("방어력 +{0}", stats[i]);
-        //            }
-        //            else
-        //            {
-        //                Console.Write("공격력 +{0}", stats[i]);
-        //            }
-        //        }
-        //    }
-        //}
-        //class ItemGold : Item
-        //{
-        //    Random random = new Random();
-        //    public override void Make()
-        //    {
-        //        int itemLength = name.Length;
-        //        for (int i = 0; i < itemLength; i++)
-        //        {
-        //            if (name[i].Contains("나무") || name[i].Contains("낡은"))
-        //            {
-        //                int n = random.Next(1, 8)*100;
-        //                gold[i] = n.ToString();
-        //            }
-        //            else if (name[i].Contains("청동") || name[i].Contains("무쇠"))
-        //            {
-        //                int n = random.Next(4, 110)*100;
-        //                gold[i] = n.ToString();
-        //            }
-        //            else
-        //            {
-        //                int n = random.Next(6,130)*100;
-        //                gold[i] = n.ToString();
-        //            }
-        //        }
-        //    }
-        //    public override void List()
-        //    {
-        //        Console.Write(name);
-        //    }
-
-        //}
-
-        //class ItemComment : Item
-        //{
-        //    string firstComment="";
-        //    string SecondComment="";
             
-        //    public override void Make()
-        //    {
-        //        int itemLength = name.Length;
-        //        for (int i = 0;i < itemLength; i++)
-        //        {
-        //            if (name[i].Contains("나무"))
-        //            {
-        //                firstComment = "초보자가 쓰기 좋은 ";
-        //            }
-        //            else if (name[i].Contains("낡은"))
-        //            {
-        //                firstComment = "쉽게 볼 수 있는 낡은 ";
-        //            }
-        //            else if(name[i].Contains("청동"))
-        //            {
-        //                firstComment = "어디선가 사용됐던거 같은 ";
-        //            }
-        //            else if (name[i].Contains("무쇠"))
-        //            {
-        //                firstComment = "무쇠로 만들어져 튼튼한 ";
-        //            }
-        //            else if (name[i].Contains("스파르타의"))
-        //            {
-        //                firstComment = "스파리타의 전사들이 사용했다는 전설의 ";
-        //            }
-        //            else if (name[i].Contains("수련자"))
-        //            {
-        //                firstComment = "수련에 도움을 주는 ";
-        //            }
-
-        //            if (name[i].Contains("갑옷"))
-        //            {
-        //                SecondComment = "갑옷입니다.";
-        //            }
-        //            else if (name[i].Contains("검"))
-        //            {
-        //                SecondComment = "검입니다.";
-        //            }
-        //            else if (name[i].Contains("창"))
-        //            {
-        //                SecondComment = "창입니다.";
-        //            }
-        //            else if (name[i].Contains("도끼"))
-        //            {
-        //                SecondComment = "도끼입니다.";
-        //            }
-        //            else if (name[i].Contains("망토"))
-        //            {
-        //                SecondComment = "망토입니다.";
-        //            }
-
-        //            comment[i] = firstComment + SecondComment;
-        //        }
-        //    }
-
-        //    public override void List()
-        //    {
-        //        Console.Write(name);
-        //    }
-
-        //}
+        }
     }
 }
 
