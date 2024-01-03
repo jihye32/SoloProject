@@ -188,7 +188,7 @@ namespace SoloProject
                 Console.WriteLine("상태보기");
                 Console.WriteLine();
                 Console.WriteLine("LV : 0" + Lv); //10이 넘어갔을 때 값 변경 추가 필요
-                Console.WriteLine($"Chad ( {name} )"); //이름 받아오기.
+                Console.WriteLine($"Chad ( {name} )");
 
                 if (checkStrike)
                 {
@@ -404,20 +404,26 @@ namespace SoloProject
                     int selectgold = itemlist.items[selectItem - 1].goldInt;
                     if (itemlist.items[selectItem - 1].gold == "구매완료")
                     {
+                        Console.Clear() ;
                         Console.WriteLine("이미 구매하신 상품입니다.");
                         StoreBuy();
                     }
                     else if (selectgold > state.Gold)
                     {
+                        Console.Clear();
                         Console.WriteLine("Gold가 부족합니다.");
                         StoreBuy();
                     }
                     else if (selectgold <= state.Gold)
                     {
                         state.Gold = state.Gold - selectgold;
-
+                        Item sellitem = new Item();
+                        sellitem.name = itemlist.items[selectItem - 1].name;
+                        sellitem.stats = itemlist.items[selectItem - 1].stats;
+                        sellitem.comment = itemlist.items[selectItem - 1].comment;
+                        sellitem.goldInt = itemlist.items[selectItem - 1].goldInt;
                         itemlist.items[selectItem - 1].gold = "구매완료";
-                        itemlist.Sellitem(itemlist.items[selectItem - 1]);
+                        itemlist.Sellitem(sellitem);
                         Console.Clear();
                         StoreBuy();
                     }
@@ -449,12 +455,15 @@ namespace SoloProject
                     int i = n - 1;
                     state.Gold += itemlist.sellitems[i].goldInt;
                     itemlist.sellitems[i] = null;
+                    itemlist.sellitemsGold[i] = 0;
                     for (i = n - 1; i < InventoryItemLength; i++)
                     {
                         if (itemlist.sellitems[i + 1] != null)
                         {
                             itemlist.sellitems[i] = itemlist.sellitems[i + 1];
                             itemlist.sellitems[i + 1] = null;
+                            itemlist.sellitemsGold[i] = itemlist.sellitemsGold[i + 1];
+                            itemlist.sellitemsGold[i + 1] = 0;
                         }
                         else break;
                     }
@@ -468,6 +477,7 @@ namespace SoloProject
         {
             public Item[] items;
             public Item[] sellitems = new Item[10];
+            public int[] sellitemsGold = new int[10];
 
             public void Make(int count)
             {
@@ -513,9 +523,11 @@ namespace SoloProject
                 int i = 0;
                 while (true)
                 {
-                    if (sellitems[i] == null)
+                    if (sellitems[i]==null)
                     {
                         sellitems[i] = item;
+                        sellitemsGold[i] = item.goldInt * 85;
+                        sellitemsGold[i] = sellitemsGold[i] / 100;
                         break;
                     }
                     else if (i > 9)
@@ -523,7 +535,10 @@ namespace SoloProject
                         Console.WriteLine("가득 찼습니다.");
                         break;
                     }
-                    else { i++; }
+                    else
+                    {
+                        i++;
+                    }
                 }
             }
 
@@ -577,23 +592,19 @@ namespace SoloProject
                     }
                     else if (sellitems[i].name.Contains("갑옷") || sellitems[i].name.Contains("망토"))
                     {
-                        sellitems[i].goldInt *= 85;
-                        sellitems[i].goldInt /= 100;
-                        sellitems[i].gold = (sellitems[i].goldInt + "G").ToString();
+                        sellitems[i].gold = (sellitemsGold[i] + "G").ToString();
                         Console.WriteLine($" {i + 1}. {sellitems[i].name}\t| 방어력 +{sellitems[i].stats} | {sellitems[i].gold} | {sellitems[i].comment}");
                     }
                     else
                     {
-                        sellitems[i].goldInt *= 85;
-                        sellitems[i].goldInt /= 100;
-                        sellitems[i].gold = (sellitems[i].goldInt + "G").ToString();
+                        sellitems[i].gold = (sellitemsGold[i] + "G").ToString();
                         Console.WriteLine($" {i + 1}. {sellitems[i].name}\t| 공격력 +{sellitems[i].stats} | {sellitems[i].gold} | {sellitems[i].comment}");
                     }
                 }
             }
         }
 
-        class Item
+        class Item 
         {
             State state = new State();
             
