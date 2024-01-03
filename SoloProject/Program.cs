@@ -316,8 +316,18 @@ namespace SoloProject
                 }
                 else if (n == 2)
                 {
-                    Console.Clear();
-                    StoreSell();
+                    if (itemlist.sellitems[0] == null)
+
+                    {
+                        Console.Clear() ;
+                        Console.WriteLine("판매할 수 있는 아이템이 없습니다.\n");
+                        ViewStore();
+                    }
+                    else
+                    {
+                        Console.Clear();
+                        StoreSell();
+                    }
                 }
                 else
                 {
