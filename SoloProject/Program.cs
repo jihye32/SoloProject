@@ -18,22 +18,17 @@ namespace SoloProject
             Inventory inventory = chain.getInventory();
             Store store = chain.getStore();
             ItemList itemList = chain.getItemList();
-            //Menu menu = new Menu();
-            //State state = new State();
-            //Inventory inventory = new Inventory();
-            //Store store = new Store();
-            //ItemList itemList = new ItemList();
 
             //서로 연결시켜주기
-            menu.getClass(state, inventory, store);
-            inventory.getClass(itemList, state);
-            store.getClass(state, itemList);
+            menu.getClass(chain);
+            inventory.getClass(chain);
+            store.getClass(chain);
+            itemList.getClass(chain);
 
             bool gameOver = false;
 
             while (!gameOver)
             {
-                //chain.getMenu().setMenu();
                 menu.setMenu();
                 gameOver = menu.CheckGameOver();
             }
@@ -41,11 +36,11 @@ namespace SoloProject
         
         class ClassChain
         {
-            Menu menu = new Menu();
-            State state = new State();
-            Inventory inventory = new Inventory();
-            Store store = new Store();
-            ItemList itemList = new ItemList();
+            public Menu menu = new Menu();
+            public State state = new State();
+            public Inventory inventory = new Inventory();
+            public Store store = new Store();
+            public ItemList itemlist = new ItemList();
 
             public Menu getMenu()
             {
@@ -65,34 +60,36 @@ namespace SoloProject
             }
             public ItemList getItemList()
             {
-                return itemList;
+                return itemlist;
             }
         }
 
         class Menu
         {
-            State state;
-            Inventory inventory;
-            Store store;
+            ClassChain chain;
+            public void getClass(ClassChain classchain)
+            {
+                chain = classchain;
+            }
             bool check = false;
 
             int menu()
             {
                 Console.Clear();
-                if (state.name == null)
+                if (chain.state.name == null)
                 {
                     Console.WriteLine("스파르타 마을에 오신 여러분 환영합니다.");
                     Console.WriteLine("스파르타 마을에 입장하기 전에 먼저 이름을 알려주세요.");
-                    state.name = Console.ReadLine();
-                    setFirstState(state.name);
+                    chain.state.name = Console.ReadLine();
+                    setFirstState(chain.state.name);
                     Console.Clear() ;
-                    Console.WriteLine($"{state.name}님 환영합니다. 여긴 스파르타 마을입니다.");
+                    Console.WriteLine($"{chain.state.name}님 환영합니다. 여긴 스파르타 마을입니다.");
                     Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
                     Console.WriteLine("0. 게임 끝내기\n\n1. 상태 보기\n2. 인벤토리\n3. 상점\n");
                 }
                 else
                 {
-                    Console.WriteLine($"{state.name}님 환영합니다. 여긴 스파르타 마을입니다.");
+                    Console.WriteLine($"{chain.state.name}님 환영합니다. 여긴 스파르타 마을입니다.");
                     Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
                     Console.WriteLine("0. 게임 끝내기\n\n1. 상태 보기\n2. 인벤토리\n3. 상점\n");
                 }
@@ -110,18 +107,18 @@ namespace SoloProject
                     case 1:
                         //상태보기
                         Console.Clear();
-                        state.ViewState();
+                        chain.state.ViewState();
                         break;
                     case 2:
                         //인벤토리
                         Console.Clear();
-                        inventory.ViewInventory();
+                        chain.inventory.ViewInventory();
                         break;
                     case 3:
                         //상점
                         Console.Clear();
-                        store.ResetStoreItem();
-                        store.ViewStore();
+                        chain.store.ResetStoreItem();
+                        chain.store.ViewStore();
                         break;
                     default:
                         Console.Clear();
@@ -133,12 +130,14 @@ namespace SoloProject
 
             void setFirstState(string name)
             {
-                state.Lv = 1;
-                state.name = name;
-                state.Strike = 10;
-                state.Depence = 5;
-                state.HP = 100;
-                state.Gold = 1500;
+                chain.state.Lv = 1;
+                chain.state.name = name;
+                chain.state.Strike = 10;
+                chain.state.Depence = 5;
+                chain.state.HP = 100;
+                chain.state.Gold = 15000;
+                chain.state.checkStrike = false;
+                chain.state.checkDepence = false;
             }
 
             public void setMenu()
@@ -149,13 +148,6 @@ namespace SoloProject
             public bool CheckGameOver()
             {
                 return check;
-            }
-
-            public void getClass(State state1, Inventory inventory1, Store store1)
-            {
-                state = state1;
-                inventory = inventory1;
-                store = store1;
             }
         }
         static int Number()
@@ -179,8 +171,8 @@ namespace SoloProject
             public int Gold { get; set; }
             public int PlusStrike { get; set; }
             public int PlusDepence { get; set; }
-            public bool checkStrike = false;
-            public bool checkDepence = false;
+            public bool checkStrike { get; set; }
+            public bool checkDepence { get; set; }
 
             public void ViewState()
             {
@@ -222,14 +214,20 @@ namespace SoloProject
 
         class Inventory
         {
-            ItemList itemlist;
-            State state;
+            ClassChain chain;
+            public void getClass(ClassChain classchain)
+            {
+                chain = classchain;
+            }
+
+            string installnameStrike = "";
+            string installnameDepence = "";
 
             public void ViewInventory()
             {
                 Console.WriteLine("\n인벤토리\n");
                 Console.WriteLine("[아이템 목록]\n");
-                itemlist.InventoryItemList("-");
+                chain.itemlist.InventoryItemList("-");
                 Console.WriteLine("\n1. 장착관리\n");
                 Console.WriteLine("0. 나가기\n");
                 int n = Number();
@@ -239,7 +237,7 @@ namespace SoloProject
                 }
                 else if (n == 1)
                 {
-                    if (itemlist.sellitems[0] == null)
+                    if (chain.itemlist.inventoryitems[0] == null)
                     {
                         Console.Clear();
                         Console.WriteLine("보유 중인 아이템이 없습니다.\n");
@@ -261,12 +259,14 @@ namespace SoloProject
 
             void InventoryItemManage()
             {
+                Item[] inventoryitem = chain.itemlist.inventoryitems;
+
                 Console.WriteLine("\n인벤토리 - 장착 관리\n");
                 Console.WriteLine("[아이템 목록]\n");
-                itemlist.InventoryItemList();
+                chain.itemlist.InventoryItemList();
                 Console.WriteLine("\n0. 나가기\n");
                 int n = Number();
-                int InventoryItemLength = itemlist.sellitems.Length;
+                int InventoryItemLength = inventoryitem.Length;
                 if (n == 0)
                 {
                     Console.Clear();
@@ -280,65 +280,91 @@ namespace SoloProject
                 }
                 else
                 {
-                    for (int i = 0; i < InventoryItemLength; i++)
+                    int i = n - 1;
+                    if (inventoryitem[i].name.Contains("E")) //장착된 아이템 해제
                     {
-                        if (n - 1 == i)
+                        if (inventoryitem[i].name.Contains("갑옷") || inventoryitem[i].name.Contains("망토"))
                         {
-                            if (itemlist.sellitems[i].name.Contains("E"))
+                            inventoryitem[i].name = installnameDepence;
+                            installnameDepence = "";
+                        }
+                        else
+                        {
+                            inventoryitem[i].name = installnameStrike;
+                            installnameStrike = "";
+                        }
+                        chain.itemlist.RemoveItem(i);
+                    }
+                    else //아이템 장착
+                    {
+                        if (inventoryitem[i].name.Contains("갑옷") || inventoryitem[i].name.Contains("망토"))//방어구
+                        {
+                            if (installnameDepence == "")
                             {
-                                Console.Clear();
-                                Console.WriteLine("이미 장착하고 있는 아이템입니다.\n");
-                                InventoryItemManage();
+                                installnameDepence = inventoryitem[i].name;
+                                chain.itemlist.InstallItem(i);
                             }
                             else
                             {
-                                itemlist.sellitems[i].name = "[E]" + itemlist.sellitems[i].name;
-
-                                if (itemlist.sellitems[i].name.Contains("갑옷") || itemlist.sellitems[i].name.Contains("망토"))
+                                for (int j = 0; j < InventoryItemLength; j++)//단, 다른 아이템 장착 시 장착된 아이템 자동 해제
                                 {
-                                    state.PlusDepence = itemlist.sellitems[i].stats;
-                                    state.Depence += state.PlusDepence;
-                                    state.checkDepence = true;
+                                    if (inventoryitem[j].name.Contains("E") && (inventoryitem[j].name.Contains("갑옷") || inventoryitem[j].name.Contains("망토")))
+                                    {
+                                        inventoryitem[j].name = installnameDepence;
+                                        installnameDepence = inventoryitem[i].name;
+                                        chain.itemlist.RemoveItem(j);
+                                        chain.itemlist.InstallItem(i);
+                                        break;
+                                    }
                                 }
-                                else
+                            }
+                        }
+                        else//무기
+                        {
+                            if (installnameStrike == "")
+                            {
+                                installnameStrike = inventoryitem[i].name;
+                                chain.itemlist.InstallItem(i);
+                            }
+                            else
+                            {
+                                for (int j = 0; j < InventoryItemLength; j++)//단, 다른 아이템 장착 시 장착된 아이템 자동 해제
                                 {
-                                    state.PlusStrike = itemlist.sellitems[i].stats;
-                                    state.Strike += state.PlusStrike;
-                                    state.checkStrike = true;
+                                    if (inventoryitem[j].name.Contains("E") && (!inventoryitem[j].name.Contains("갑옷") && !inventoryitem[j].name.Contains("망토")))
+                                    {
+                                        inventoryitem[j].name = installnameStrike;
+                                        installnameStrike = inventoryitem[i].name;
+                                        chain.itemlist.RemoveItem(j);
+                                        chain.itemlist.InstallItem(i);
+                                        break;
+                                    }
                                 }
-                                Console.Clear();
-                                InventoryItemManage();
                             }
                         }
                     }
+                    Console.Clear();
+                    InventoryItemManage();
                 }
-            }
-
-            public void getClass(ItemList itemlist1, State state1)
-            {
-                itemlist = itemlist1;
-                state = state1;
             }
         }
 
         class Store
         {
-            State state;
-            ItemList itemlist;
-
-            public void getClass(State state1, ItemList itemlist1)
+            ClassChain chain;
+            public void getClass(ClassChain classchain)
             {
-                state = state1;
-                itemlist = itemlist1;
+                chain = classchain;
             }
 
             public void ViewStore()
             {
+                Item[] sellitems = chain.itemlist.inventoryitems;
+
                 Console.WriteLine("\n상점\n");
                 Console.WriteLine("[보유 골드]");
-                Console.WriteLine($"{state.Gold}G");
+                Console.WriteLine($"{chain.state.Gold}G");
                 Console.WriteLine("\n[아이템 목록]\n");
-                itemlist.List("-");
+                chain.itemlist.List("-");
                 Console.WriteLine("\n1. 아이템 구매");
                 Console.WriteLine("2. 아이템 판매");
                 Console.WriteLine("\n0. 나가기\n");
@@ -354,7 +380,7 @@ namespace SoloProject
                 }
                 else if (n == 2)
                 {
-                    if (itemlist.sellitems[0] == null)
+                    if (sellitems[0] == null)
 
                     {
                         Console.Clear();
@@ -377,15 +403,15 @@ namespace SoloProject
 
             public void ResetStoreItem()
             {
-                itemlist.Make(6);
+                chain.itemlist.Make(6);
             }
 
             void StoreBuy()
             {
                 Console.WriteLine("\n상점 - 아이템 구매\n");
-                Console.WriteLine($"[보유 골드]\n{state.Gold}G\n");
+                Console.WriteLine($"[보유 골드]\n{chain.state.Gold}G\n");
                 Console.WriteLine("[아이템 목록]\n");
-                itemlist.List();
+                chain.itemlist.List();
                 Console.WriteLine("\n0. 나가기\n");
                 int selectItem = Number();
                 if (selectItem < 0 || selectItem > 6)
@@ -401,29 +427,33 @@ namespace SoloProject
                 }
                 else
                 {
-                    int selectgold = itemlist.items[selectItem - 1].goldInt;
-                    if (itemlist.items[selectItem - 1].gold == "구매완료")
+                    int selectgold = chain.itemlist.items[selectItem - 1].goldInt;
+                    if (chain.itemlist.items[selectItem - 1].gold == "구매완료")
                     {
                         Console.Clear() ;
                         Console.WriteLine("이미 구매하신 상품입니다.");
                         StoreBuy();
                     }
-                    else if (selectgold > state.Gold)
+                    else if (selectgold > chain.state.Gold)
                     {
                         Console.Clear();
                         Console.WriteLine("Gold가 부족합니다.");
                         StoreBuy();
                     }
-                    else if (selectgold <= state.Gold)
+                    else if (selectgold <= chain.state.Gold)
                     {
-                        state.Gold = state.Gold - selectgold;
-                        Item sellitem = new Item();
-                        sellitem.name = itemlist.items[selectItem - 1].name;
-                        sellitem.stats = itemlist.items[selectItem - 1].stats;
-                        sellitem.comment = itemlist.items[selectItem - 1].comment;
-                        sellitem.goldInt = itemlist.items[selectItem - 1].goldInt;
-                        itemlist.items[selectItem - 1].gold = "구매완료";
-                        itemlist.Sellitem(sellitem);
+                        chain.state.Gold = chain.state.Gold - selectgold;
+
+                        Item buyitem = new Item();
+                        buyitem.name = chain.itemlist.items[selectItem - 1].name;
+                        buyitem.stats = chain.itemlist.items[selectItem - 1].stats;
+                        buyitem.comment = chain.itemlist.items[selectItem - 1].comment;
+                        buyitem.goldInt = chain.itemlist.items[selectItem - 1].goldInt * 85;
+                        buyitem.goldInt = buyitem.goldInt / 100;
+                        buyitem.gold = buyitem.goldInt.ToString() + "G";
+
+                        chain.itemlist.InventoryItem(buyitem);
+                        chain.itemlist.items[selectItem - 1].gold = "구매완료";
                         Console.Clear();
                         StoreBuy();
                     }
@@ -432,13 +462,15 @@ namespace SoloProject
 
             void StoreSell()
             {
+                Item[] sellitems = chain.itemlist.inventoryitems;
+
                 Console.WriteLine("\n상점 - 아이템 판매\n");
-                Console.WriteLine($"[보유 골드]\n{state.Gold}G\n");
+                Console.WriteLine($"[보유 골드]\n{chain.state.Gold}G\n");
                 Console.WriteLine("[아이템 목록]\n");
-                itemlist.InventoryItemSellList();
+                chain.itemlist.InventoryItemSellList();
                 Console.WriteLine("\n0. 나가기\n");
                 int n = Number();
-                int InventoryItemLength = itemlist.sellitems.Length;
+                int InventoryItemLength = sellitems.Length;
                 if (n == 0)
                 {
                     Console.Clear();
@@ -453,17 +485,20 @@ namespace SoloProject
                 else 
                 {
                     int i = n - 1;
-                    state.Gold += itemlist.sellitems[i].goldInt;
-                    itemlist.sellitems[i] = null;
-                    itemlist.sellitemsGold[i] = 0;
+                    if (sellitems[i].name.Contains("E"))
+                    {
+                        chain.itemlist.RemoveItem(i);
+                    }
+                    chain.state.Gold += sellitems[i].goldInt;
+                    sellitems[i] = null;
                     for (i = n - 1; i < InventoryItemLength; i++)
                     {
-                        if (itemlist.sellitems[i + 1] != null)
+                        if (sellitems[i + 1] != null)
                         {
-                            itemlist.sellitems[i] = itemlist.sellitems[i + 1];
-                            itemlist.sellitems[i + 1] = null;
-                            itemlist.sellitemsGold[i] = itemlist.sellitemsGold[i + 1];
-                            itemlist.sellitemsGold[i + 1] = 0;
+                            sellitems[i] = sellitems[i + 1];
+                            sellitems[i + 1] = null;
+                            sellitems[i].goldInt = sellitems[i + 1].goldInt;
+                            sellitems[i + 1].goldInt = 0;
                         }
                         else break;
                     }
@@ -475,9 +510,14 @@ namespace SoloProject
 
         class ItemList
         {
+            ClassChain chain;
+            public void getClass(ClassChain classchain)
+            {
+                chain = classchain;
+            }
+
             public Item[] items;
-            public Item[] sellitems = new Item[10];
-            public int[] sellitemsGold = new int[10];
+            public Item[] inventoryitems = new Item[10];
 
             public void Make(int count)
             {
@@ -518,16 +558,20 @@ namespace SoloProject
                 }
             }
 
-            public void Sellitem(Item item)
+            public void InventoryItem(Item item)
             {
                 int i = 0;
                 while (true)
                 {
-                    if (sellitems[i]==null)
+                    if (inventoryitems[i]==null)
                     {
-                        sellitems[i] = item;
-                        sellitemsGold[i] = item.goldInt * 85;
-                        sellitemsGold[i] = sellitemsGold[i] / 100;
+                        inventoryitems[i] = item;
+                        //inventoryitems[i].name = item.name;
+                        //inventoryitems[i].stats = item.stats;
+                        //inventoryitems[i].comment = item.comment;
+                        //inventoryitems[i].goldInt = item.goldInt * 85;
+                        //inventoryitems[i].goldInt = inventoryitems[i].goldInt / 100;
+                        //inventoryitems[i].gold = inventoryitems[i].goldInt.ToString() + "G";
                         break;
                     }
                     else if (i > 9)
@@ -544,62 +588,94 @@ namespace SoloProject
 
             public void InventoryItemList(string plus)
             {
-                int itemLength = sellitems.Length;
+                int itemLength = inventoryitems.Length;
                 for (int i = 0; i < itemLength; i++)
                 {
-                    if (sellitems[i] == null)
+                    if (inventoryitems[i] == null)
                     {
                         break;
                     }
-                    else if (sellitems[i].name.Contains("갑옷") || sellitems[i].name.Contains("망토"))
+                    else if (inventoryitems[i].name.Contains("갑옷") || inventoryitems[i].name.Contains("망토"))
                     {
-                        Console.WriteLine($"{plus} {sellitems[i].name}\t| 방어력 +{sellitems[i].stats} | {sellitems[i].comment}");
+                        Console.WriteLine($"{plus} {inventoryitems[i].name}\t| 방어력 +{inventoryitems[i].stats} | {inventoryitems[i].comment}");
                     }
                     else
                     {
-                        Console.WriteLine($"{plus} {sellitems[i].name}\t| 공격력 +{sellitems[i].stats} | {sellitems[i].comment}");
+                        Console.WriteLine($"{plus} {inventoryitems[i].name}\t| 공격력 +{inventoryitems[i].stats} | {inventoryitems[i].comment}");
                     }
                 }
             }
             public void InventoryItemList()
             {
-                int itemLength = sellitems.Length;
+                int itemLength = inventoryitems.Length;
                 for (int i = 0; i < itemLength; i++)
                 {
-                    if (sellitems[i] == null)
+                    if (inventoryitems[i] == null)
                     {
                         break;
                     }
-                    else if (sellitems[i].name.Contains("갑옷") || sellitems[i].name.Contains("망토"))
+                    else if (inventoryitems[i].name.Contains("갑옷") || inventoryitems[i].name.Contains("망토"))
                     {
-                        Console.WriteLine($" {i+1}. {sellitems[i].name}\t| 방어력 +{sellitems[i].stats} | {sellitems[i].comment}");
+                        Console.WriteLine($" {i+1}. {inventoryitems[i].name}\t| 방어력 +{inventoryitems[i].stats} | {inventoryitems[i].comment}");
                     }
                     else
                     {
-                        Console.WriteLine($" {i+1}. {sellitems[i].name}\t| 공격력 +{sellitems[i].stats} | {sellitems[i].comment}");
+                        Console.WriteLine($" {i+1}. {inventoryitems[i].name}\t| 공격력 +{inventoryitems[i].stats} | {inventoryitems[i].comment}");
                     }
                 }
             }
 
             public void InventoryItemSellList()
             {
-                int itemLength = sellitems.Length;
+                int itemLength = inventoryitems.Length;
                 for (int i = 0; i < itemLength; i++)
                 {
-                    if (sellitems[i] == null)
+                    if (inventoryitems[i] == null)
                     {
                         break;
                     }
-                    else if (sellitems[i].name.Contains("갑옷") || sellitems[i].name.Contains("망토"))
+                    else if (inventoryitems[i].name.Contains("갑옷") || inventoryitems[i].name.Contains("망토"))
                     {
-                        sellitems[i].gold = (sellitemsGold[i] + "G").ToString();
-                        Console.WriteLine($" {i + 1}. {sellitems[i].name}\t| 방어력 +{sellitems[i].stats} | {sellitems[i].gold} | {sellitems[i].comment}");
+                        Console.WriteLine($" {i + 1}. {inventoryitems[i].name}\t| 방어력 +{inventoryitems[i].stats} | {inventoryitems[i].gold} | {inventoryitems[i].comment}");
                     }
                     else
                     {
-                        sellitems[i].gold = (sellitemsGold[i] + "G").ToString();
-                        Console.WriteLine($" {i + 1}. {sellitems[i].name}\t| 공격력 +{sellitems[i].stats} | {sellitems[i].gold} | {sellitems[i].comment}");
+                        Console.WriteLine($" {i + 1}. {inventoryitems[i].name}\t| 공격력 +{inventoryitems[i].stats} | {inventoryitems[i].gold} | {inventoryitems[i].comment}");
                     }
+                }
+            }
+
+            public void RemoveItem(int i)
+            {
+                if (inventoryitems[i].name.Contains("갑옷") || inventoryitems[i].name.Contains("망토"))
+                {
+                    chain.state.checkDepence = false;
+                    chain.state.Depence -= chain.state.PlusDepence;
+                    chain.state.PlusDepence = 0;
+                }
+                else
+                {
+                    chain.state.checkStrike = false;
+                    chain.state.Strike -= chain.state.PlusStrike;
+                    chain.state.PlusStrike = 0;
+                }
+            }
+
+            public void InstallItem(int i)
+            {
+                inventoryitems[i].name = "[E]" + inventoryitems[i].name;
+
+                if (inventoryitems[i].name.Contains("갑옷") || inventoryitems[i].name.Contains("망토"))
+                {
+                    chain.state.PlusDepence = inventoryitems[i].stats;
+                    chain.state.Depence += chain.state.PlusDepence;
+                    chain.state.checkDepence = true;
+                }
+                else
+                {
+                    chain.state.PlusStrike = inventoryitems[i].stats;
+                    chain.state.Strike += chain.state.PlusStrike;
+                    chain.state.checkStrike = true;
                 }
             }
         }
