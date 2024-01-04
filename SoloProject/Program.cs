@@ -190,7 +190,7 @@ namespace SoloProject
         {
             public int Lv { get; set; }
             public string name { get; set; }
-            public int Strike { get; set; }
+            public float Strike { get; set; }
             public int Depence { get; set; }
             public int HP { get; set; }
             public int Gold { get; set; }
@@ -735,7 +735,7 @@ namespace SoloProject
                 int clearGold;
                 bool clear;
 
-                int strike = chain.state.Strike;
+                float strike = chain.state.Strike;
                 int depence = chain.state.Depence;
                 int HP = chain.state.HP;
                 int gold = chain.state.Gold;
@@ -919,8 +919,31 @@ namespace SoloProject
                     }
                     if (clearCount > levelup)
                     {
+                        LevelUp();
                         chain.state.Lv++;
+                        chain.state.Strike += 0.5f;
+                        chain.state.Depence += 1;
+                        chain.state.HP += 10;
                         clearCount = 0;
+                    }
+                }
+
+                void LevelUp()
+                {
+                    Console.WriteLine("축하합니다! 레벨이 오르셨습니다!\n");
+                    Console.WriteLine($"{chain.state.Lv} -> {chain.state.Lv + 1}");
+                    Console.WriteLine("\n0. 나가기\n");
+                    int n = Number();
+                    switch (n)
+                    {
+                        case 0:
+                            Console.Clear();
+                            break;
+                        default:
+                            Console.Clear();
+                            Console.WriteLine("잘못된 입력입니다.\n");
+                            LevelUp();
+                            break;
                     }
                 }
             }
