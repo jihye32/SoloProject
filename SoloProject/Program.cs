@@ -1,6 +1,7 @@
 ﻿using System;
 using System.ComponentModel.Design;
 using System.Reflection.Metadata;
+using System.Security.Claims;
 using System.Xml.Linq;
 using static System.Formats.Asn1.AsnWriter;
 using static System.Runtime.InteropServices.JavaScript.JSType;
@@ -18,12 +19,14 @@ namespace SoloProject
             Inventory inventory = chain.getInventory();
             Store store = chain.getStore();
             ItemList itemList = chain.getItemList();
+            Dungeon dungeon = chain.getDungeon();
 
             //서로 연결시켜주기
             menu.getClass(chain);
             inventory.getClass(chain);
             store.getClass(chain);
             itemList.getClass(chain);
+            dungeon.getClass(chain);
 
             bool gameOver = false;
 
@@ -41,6 +44,7 @@ namespace SoloProject
             public Inventory inventory = new Inventory();
             public Store store = new Store();
             public ItemList itemlist = new ItemList();
+            public Dungeon dungeon = new Dungeon();
 
             public Menu getMenu()
             {
@@ -61,6 +65,10 @@ namespace SoloProject
             public ItemList getItemList()
             {
                 return itemlist;
+            }
+            public Dungeon getDungeon()
+            {
+                return dungeon;
             }
         }
 
@@ -85,13 +93,13 @@ namespace SoloProject
                     Console.Clear() ;
                     Console.WriteLine($"{chain.state.name}님 환영합니다. 여긴 스파르타 마을입니다.");
                     Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
-                    Console.WriteLine("0. 게임 끝내기\n\n1. 상태 보기\n2. 인벤토리\n3. 상점\n");
+                    Console.WriteLine("0. 게임 끝내기\n\n1. 상태 보기\n2. 인벤토리\n3. 상점\n4. 던전\n");
                 }
                 else
                 {
                     Console.WriteLine($"{chain.state.name}님 환영합니다. 여긴 스파르타 마을입니다.");
                     Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
-                    Console.WriteLine("0. 게임 끝내기\n\n1. 상태 보기\n2. 인벤토리\n3. 상점\n");
+                    Console.WriteLine("0. 게임 끝내기\n\n1. 상태 보기\n2. 인벤토리\n3. 상점\n4. 던전\n");
                 }
                 return Number();
             }
@@ -119,6 +127,11 @@ namespace SoloProject
                         Console.Clear();
                         chain.store.ResetStoreItem();
                         chain.store.ViewStore();
+                        break;
+                    case 4:
+                        //던전
+                        Console.Clear();
+                        chain.dungeon.ViewDungeon();
                         break;
                     default:
                         Console.Clear();
@@ -200,14 +213,15 @@ namespace SoloProject
                 int n;
                 Console.WriteLine("0. 나가기\n");
                 n = Number();
-                if (n == 0)
+                switch (n)
                 {
-                    Console.Clear();
-                }
-                else
-                {
-                    Console.WriteLine("잘못된 입력입니다.\n");
-                    ViewState();
+                    case 0:
+                        Console.Clear();
+                        break;
+                    default:
+                        Console.WriteLine("잘못된 입력입니다.\n");
+                        ViewState();
+                        break;
                 }
             }
         }
@@ -231,29 +245,29 @@ namespace SoloProject
                 Console.WriteLine("\n1. 장착관리\n");
                 Console.WriteLine("0. 나가기\n");
                 int n = Number();
-                if (n == 0)
+                switch (n)
                 {
-                    Console.Clear();
-                }
-                else if (n == 1)
-                {
-                    if (chain.itemlist.inventoryitems[0] == null)
-                    {
+                    case 0:
                         Console.Clear();
-                        Console.WriteLine("보유 중인 아이템이 없습니다.\n");
+                        break;
+                    case 1:
+                        if (chain.itemlist.inventoryitems[0] == null)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("보유 중인 아이템이 없습니다.\n");
+                            ViewInventory();
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            InventoryItemManage();
+                        }
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("잘못된 입력입니다.\n");
                         ViewInventory();
-                    }
-                    else
-                    {
-                        Console.Clear();
-                        InventoryItemManage();
-                    }
-                }
-                else
-                {
-                    Console.Clear();
-                    Console.WriteLine("잘못된 입력입니다.\n");
-                    ViewInventory();
+                        break;
                 }
             }
 
@@ -369,35 +383,34 @@ namespace SoloProject
                 Console.WriteLine("2. 아이템 판매");
                 Console.WriteLine("\n0. 나가기\n");
                 int n = Number();
-                if (n == 0)
+                switch (n)
                 {
-                    Console.Clear();
-                }
-                else if (n == 1)
-                {
-                    Console.Clear();
-                    StoreBuy();
-                }
-                else if (n == 2)
-                {
-                    if (sellitems[0] == null)
+                    case 0:
+                        Console.Clear();
+                        break;
+                    case 1:
+                        Console.Clear();
+                        StoreBuy();
+                        break;
+                    case 2:
+                        if (sellitems[0] == null)
 
-                    {
+                        {
+                            Console.Clear();
+                            Console.WriteLine("판매할 수 있는 아이템이 없습니다.\n");
+                            ViewStore();
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            StoreSell();
+                        }
+                        break;
+                    default:
                         Console.Clear();
-                        Console.WriteLine("판매할 수 있는 아이템이 없습니다.\n");
+                        Console.WriteLine("잘못된 입력입니다.\n");
                         ViewStore();
-                    }
-                    else
-                    {
-                        Console.Clear();
-                        StoreSell();
-                    }
-                }
-                else
-                {
-                    Console.Clear();
-                    Console.WriteLine("잘못된 입력입니다.\n");
-                    ViewStore();
+                        break;
                 }
             }
 
@@ -513,6 +526,394 @@ namespace SoloProject
                 }
             }
         }
+
+        class Dungeon
+        {
+            ClassChain chain;
+            private int clearCount = 0;
+            int levelup = 10;
+            public void getClass(ClassChain classchain)
+            {
+                chain = classchain;
+            }
+
+            public void ViewDungeon()
+            {
+                Random random = new Random();
+
+                Console.WriteLine("\n[던전 - 난이도 선택]\n");
+                Console.WriteLine("[공격력]");
+                Console.WriteLine($"   {chain.state.Strike}");
+                Console.WriteLine("[방어력]");
+                if (chain.state.Depence < 10)
+                {
+                    Console.WriteLine($"    {chain.state.Depence}");
+                }
+                else Console.WriteLine($"   {chain.state.Depence}");
+                Console.WriteLine(" [체력]");
+                Console.WriteLine($"  {chain.state.HP}");
+
+                Console.WriteLine("\n1. 쉬움");
+                Console.WriteLine("2. 보통");
+                Console.WriteLine("3. 어려움");
+                Console.WriteLine("\n0. 나가기\n");
+                int n = Number();
+                switch (n)
+                {
+                    case 0:
+                        Console.Clear();
+                        break;
+                    case 1:
+                        Console.Clear();
+                        int needStrike1 = 10 + chain.state.Lv;
+                        int needDepence1 = 5 + chain.state.Lv;
+                        int needHP1 = 20 + random.Next(6);
+                        EasyDungeon(needStrike1, needDepence1, needHP1);
+                        break;
+                    case 2:
+                        Console.Clear();
+                        int needStrike2 = 12 + chain.state.Lv + random.Next(2);
+                        int needDepence2 = 7 + chain.state.Lv + random.Next(2);
+                        int needHP2 = 40 + random.Next(11);
+                        NomalDungeon(needStrike2, needDepence2, needHP2);
+                        break;
+                    case 3:
+                        Console.Clear();
+                        int needStrike3 = 15 + chain.state.Lv + random.Next(1, 5);
+                        int needDepence3 = 10 + chain.state.Lv + random.Next(1, 5);
+                        int needHP3 = 60 + random.Next(11);
+                        HardDungeon(needStrike3, needDepence3, needHP3);
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("잘못된 입력입니다.\n");
+                        ViewDungeon();
+                        break;
+                }
+            }
+
+            void EasyDungeon(int Strike, int Depence, int hp)
+            {
+                Console.WriteLine("\n 던전 - [쉬움]\n");
+                Console.WriteLine("[공격력]  [권장 공격력]");
+                Console.WriteLine($"   {chain.state.Strike}\t      {Strike}");
+                Console.WriteLine("[방어력]  [권장 방어력]");
+                if (chain.state.Depence < 10)
+                {
+                    Console.WriteLine($"    {chain.state.Depence}\t       {Depence}");
+                }
+                else Console.WriteLine($"   {chain.state.Depence}\t      {Depence}");
+                Console.WriteLine(" [체력]\t [필요한 체력]");
+                Console.WriteLine($"  {chain.state.HP}\t      {hp}");
+                Console.WriteLine("\n1. 입장");
+                Console.WriteLine("\n0. 나가기\n");
+                int n = Number();
+                switch (n)
+                {
+                    case 0:
+                        Console.Clear();
+                        ViewDungeon();
+                        break;
+                    case 1:
+                        Console.Clear();
+                        if (chain.state.HP <= hp)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("\n체력이 부족해 입장하실 수 없습니다.\n던전을 나갑니다.");
+                            Console.ReadLine();
+                        }
+                        else EnterDungeon(0, Strike, Depence, hp);
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("잘못된 입력입니다.\n");
+                        EasyDungeon(Strike, Depence, hp);
+                        break;
+                }
+            }
+
+            void NomalDungeon(int Strike, int Depence, int hp)
+            {
+                Console.WriteLine("\n 던전 - [보통]\n");
+                Console.WriteLine("[공격력]  [권장 공격력]");
+                Console.WriteLine($"   {chain.state.Strike}\t      {Strike}");
+                Console.WriteLine("[방어력]  [권장 방어력]");
+                if (chain.state.Depence < 10)
+                {
+                    Console.WriteLine($"    {chain.state.Depence}\t       {Depence}");
+                }
+                else Console.WriteLine($"   {chain.state.Depence}\t      {Depence}");
+                Console.WriteLine(" [체력]\t [필요한 체력]");
+                Console.WriteLine($"   {chain.state.HP}\t      {hp}");
+                Console.WriteLine("\n1. 입장");
+                Console.WriteLine("\n0. 나가기\n");
+                int n = Number();
+                switch (n)
+                {
+                    case 0:
+                        Console.Clear();
+                        ViewDungeon();
+                        break;
+                    case 1:
+                        Console.Clear();
+                        if (chain.state.HP <= hp)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("\n체력이 부족해 입장하실 수 없습니다.\n던전을 나갑니다.");
+                            Console.ReadLine();
+                        }
+                        else EnterDungeon(1, Strike, Depence, hp);
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("잘못된 입력입니다.\n");
+                        NomalDungeon(Strike, Depence, hp);
+                        break;
+                }
+            }
+            void HardDungeon(int Strike, int Depence, int hp)
+            {
+                Console.WriteLine("\n 던전 - [어려움]\n");
+                Console.WriteLine("[공격력]  [권장 공격력]");
+                Console.WriteLine($"   {chain.state.Strike}\t      {Strike}");
+                Console.WriteLine("[방어력]  [권장 방어력]");
+                if (chain.state.Depence < 10)
+                {
+                    Console.WriteLine($"    {chain.state.Depence}\t       {Depence}");
+                }
+                else Console.WriteLine($"   {chain.state.Depence}\t      {Depence}");
+                Console.WriteLine(" [체력]\t [필요한 체력]");
+                Console.WriteLine($"  {chain.state.HP}\t      {hp}");
+                Console.WriteLine("\n1. 입장");
+                Console.WriteLine("\n0. 나가기\n");
+                int n = Number();
+                switch (n)
+                {
+                    case 0:
+                        Console.Clear();
+                        ViewDungeon();
+                        break;
+                    case 1:
+                        Console.Clear();
+                        if (chain.state.HP <= hp)
+                        {
+                            Console.Clear();
+                            Console.WriteLine("\n체력이 부족해 입장하실 수 없습니다.\n던전을 나갑니다.");
+                            Console.ReadLine();
+                        }
+                        else EnterDungeon(2, Strike, Depence, hp);
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("잘못된 입력입니다.\n");
+                        HardDungeon(Strike, Depence, hp);
+                        break;
+                }
+            }
+
+            void EnterDungeon(int level, int Strike, int Depence, int hp)
+            {
+                Random random = new Random();
+                int percent = random.Next(0, 10);
+
+                int ClearPercent = 6;
+                int PlusPercent = 1;
+                int needStrike = Strike;
+                int needDepence = Depence;
+                int needHp = hp;
+                int clearGold;
+                bool clear;
+
+                int strike = chain.state.Strike;
+                int depence = chain.state.Depence;
+                int HP = chain.state.HP;
+                int gold = chain.state.Gold;
+
+                switch (level)
+                {
+                    case 0:
+                        if (strike >= needStrike)
+                        {
+                            ClearPercent += PlusPercent;
+                            if(strike - needStrike > 5)
+                            {
+                                ClearPercent += PlusPercent;
+                            }
+                        }
+                        if (depence >= needDepence)
+                        {
+                            ClearPercent += PlusPercent;
+                            if (depence - needDepence > 5)
+                            {
+                                ClearPercent += PlusPercent;
+                            }
+                        }
+                        if (percent < ClearPercent)
+                        {
+                            clearGold = 500 + (random.Next(2) + chain.state.Lv) * 100;
+                            clear = true;
+                            Clear(10, clearGold);
+                            chain.state.HP -= 10;
+                            chain.state.Gold += clearGold;
+                        }
+                        else
+                        {
+                            clear = false;
+                            NonClear(hp);
+                            chain.state.HP -= hp;
+                        }
+                        ClearCount(clear, 1);
+                        break;
+                    case 1:
+                        if (strike >= needStrike)
+                        {
+                            ClearPercent += PlusPercent;
+                            if (strike - needStrike > 5)
+                            {
+                                ClearPercent += PlusPercent;
+                            }
+                            else if(needStrike - strike > 5)
+                            {
+                                ClearPercent -= PlusPercent;
+                            }
+                        }
+                        if (depence >= needDepence)
+                        {
+                            ClearPercent += PlusPercent;
+                            if (depence - needDepence > 5)
+                            {
+                                ClearPercent += PlusPercent;
+                            }
+                            else if (needDepence - depence > 5)
+                            {
+                                ClearPercent -= PlusPercent;
+                            }
+                        }
+                        if (percent < ClearPercent)
+                        {
+                            clearGold = 700 + (random.Next(5) + chain.state.Lv) * 100;
+                            clear = true;
+                            Clear(20, clearGold);
+                            chain.state.HP -= 20;
+                            chain.state.Gold += clearGold;
+                        }
+                        else
+                        {
+                            clear = false;
+                            NonClear(hp);
+                            chain.state.HP -= hp;
+                        }
+                        ClearCount(clear, 2);
+                        break;
+                    case 2:
+                        if (strike >= needStrike)
+                        {
+                            ClearPercent += PlusPercent;
+                            if (strike - needStrike > 5)
+                            {
+                                ClearPercent += PlusPercent;
+                            }
+                            else if (needStrike - strike > 2)
+                            {
+                                ClearPercent -= PlusPercent;
+                                if (needStrike - strike > 5)
+                                {
+                                    ClearPercent -= PlusPercent;
+                                }
+                            }
+                        }
+                        if (depence >= needDepence)
+                        {
+                            ClearPercent += PlusPercent;
+                            if (depence - needDepence > 5)
+                            {
+                                ClearPercent += PlusPercent;
+                            }
+                            else if (needDepence - depence > 2)
+                            {
+                                ClearPercent -= PlusPercent;
+                                if (needDepence - depence > 5)
+                                {
+                                    ClearPercent -= PlusPercent;
+                                }
+                            }
+                        }
+                        if (percent < ClearPercent)
+                        {
+                            clearGold = 1000 + (random.Next(10) + chain.state.Lv) * 100;
+                            clear = true;
+                            Clear(40, clearGold);
+                            chain.state.HP -= 40;
+                            chain.state.Gold += clearGold;
+                        }
+                        else
+                        {
+                            clear = false;
+                            NonClear(hp);
+                            chain.state.HP -= hp;
+                        }
+                        ClearCount(clear, 3);
+                        break;
+                }
+
+                void Clear(int hp, int gold)
+                {
+                    Console.WriteLine("\n던전 클리어\n");
+                    Console.WriteLine("[탐험 결과]\n");
+                    Console.WriteLine($"체력 {chain.state.HP} -> {chain.state.HP - hp}");
+                    Console.WriteLine($"골드 {chain.state.Gold} -> {chain.state.Gold + gold}");
+                    Console.WriteLine("\n0. 나가기\n");
+                    int n = Number();
+                    switch (n)
+                    {
+                        case 0:
+                            Console.Clear();
+                            break;
+                        default:
+                            Console.Clear();
+                            Console.WriteLine("잘못된 입력입니다.\n");
+                            Clear(hp, gold);
+                            break;
+                    }
+                }
+
+                void NonClear(int hp)
+                {
+                    Console.WriteLine("\n던전 클리어 실패\n");
+                    Console.WriteLine("[탐험 결과]\n");
+                    Console.WriteLine($"체력 {chain.state.HP} -> {chain.state.HP - hp}");
+                    Console.WriteLine("\n0. 나가기\n");
+                    int n = Number();
+                    switch (n)
+                    {
+                        case 0:
+                            Console.Clear();
+                            break;
+                        default:
+                            Console.Clear();
+                            Console.WriteLine("잘못된 입력입니다.\n");
+                            Clear(hp, gold);
+                            break;
+                    }
+                }
+
+                void ClearCount(bool clear, int difficult)
+                {
+                    if (clear)
+                    {
+                        clearCount += difficult;
+                    }
+                    if (clearCount > levelup)
+                    {
+                        chain.state.Lv++;
+                        levelup *= chain.state.Lv;
+                        clearCount = 0;
+                    }
+                }
+            }
+        }
+
+
 
         class ItemList
         {
@@ -691,7 +1092,7 @@ namespace SoloProject
             public string gold="";
             public string comment="";
             public int goldInt=0;
-            private string[] firstName = { "나무", "낡은 ", "수련자", "청동", "무쇠", "스파트라의 " };
+            private string[] firstName = { "나무", "낡은 ", "수련자 ", "청동", "무쇠", "스파트라의 " };
             private string[] secondName = { "갑옷", "망토", "검", "창", "도끼"};
             private string firstComment = "";
             private string SecondComment = "";
