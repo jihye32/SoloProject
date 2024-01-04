@@ -135,7 +135,7 @@ namespace SoloProject
                 chain.state.Strike = 10;
                 chain.state.Depence = 5;
                 chain.state.HP = 100;
-                chain.state.Gold = 15000;
+                chain.state.Gold = 1500;
                 chain.state.checkStrike = false;
                 chain.state.checkDepence = false;
             }
@@ -220,8 +220,8 @@ namespace SoloProject
                 chain = classchain;
             }
 
-            string installnameStrike = "";
-            string installnameDepence = "";
+            public string installnameStrike = "";
+            public string installnameDepence = "";
 
             public void ViewInventory()
             {
@@ -488,6 +488,14 @@ namespace SoloProject
                     if (sellitems[i].name.Contains("E"))
                     {
                         chain.itemlist.RemoveItem(i);
+                        if (sellitems[i].name.Contains("갑옷") || sellitems[i].name.Contains("망토"))
+                        {
+                            chain.inventory.installnameDepence = "";
+                        }
+                        else
+                        {
+                            chain.inventory.installnameStrike = "";
+                        }
                     }
                     chain.state.Gold += sellitems[i].goldInt;
                     sellitems[i] = null;
@@ -497,8 +505,6 @@ namespace SoloProject
                         {
                             sellitems[i] = sellitems[i + 1];
                             sellitems[i + 1] = null;
-                            sellitems[i].goldInt = sellitems[i + 1].goldInt;
-                            sellitems[i + 1].goldInt = 0;
                         }
                         else break;
                     }
@@ -566,12 +572,6 @@ namespace SoloProject
                     if (inventoryitems[i]==null)
                     {
                         inventoryitems[i] = item;
-                        //inventoryitems[i].name = item.name;
-                        //inventoryitems[i].stats = item.stats;
-                        //inventoryitems[i].comment = item.comment;
-                        //inventoryitems[i].goldInt = item.goldInt * 85;
-                        //inventoryitems[i].goldInt = inventoryitems[i].goldInt / 100;
-                        //inventoryitems[i].gold = inventoryitems[i].goldInt.ToString() + "G";
                         break;
                     }
                     else if (i > 9)
