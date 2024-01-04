@@ -20,6 +20,7 @@ namespace SoloProject
             Store store = chain.getStore();
             ItemList itemList = chain.getItemList();
             Dungeon dungeon = chain.getDungeon();
+            Heal heal = chain.getHeal();
 
             //서로 연결시켜주기
             menu.getClass(chain);
@@ -27,6 +28,7 @@ namespace SoloProject
             store.getClass(chain);
             itemList.getClass(chain);
             dungeon.getClass(chain);
+            heal.getClass(chain);
 
             bool gameOver = false;
 
@@ -45,6 +47,7 @@ namespace SoloProject
             public Store store = new Store();
             public ItemList itemlist = new ItemList();
             public Dungeon dungeon = new Dungeon();
+            public Heal heal = new Heal();
 
             public Menu getMenu()
             {
@@ -70,6 +73,10 @@ namespace SoloProject
             {
                 return dungeon;
             }
+            public Heal getHeal()
+            {
+                return heal;
+            }
         }
 
         class Menu
@@ -93,13 +100,13 @@ namespace SoloProject
                     Console.Clear() ;
                     Console.WriteLine($"{chain.state.name}님 환영합니다. 여긴 스파르타 마을입니다.");
                     Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
-                    Console.WriteLine("0. 게임 끝내기\n\n1. 상태 보기\n2. 인벤토리\n3. 상점\n4. 던전\n");
+                    Console.WriteLine("0. 게임 끝내기\n\n1. 상태 보기\n2. 인벤토리\n3. 상점\n4. 던전입장\n5. 휴식하기\n");
                 }
                 else
                 {
                     Console.WriteLine($"{chain.state.name}님 환영합니다. 여긴 스파르타 마을입니다.");
                     Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다.\n");
-                    Console.WriteLine("0. 게임 끝내기\n\n1. 상태 보기\n2. 인벤토리\n3. 상점\n4. 던전\n");
+                    Console.WriteLine("0. 게임 끝내기\n\n1. 상태 보기\n2. 인벤토리\n3. 상점\n4. 던전입장\n5. 휴식하기\n");
                 }
                 return Number();
             }
@@ -132,6 +139,11 @@ namespace SoloProject
                         //던전
                         Console.Clear();
                         chain.dungeon.ViewDungeon();
+                        break;
+                    case 5:
+                        //휴식
+                        Console.Clear();
+                        chain.heal.ViewHeal();
                         break;
                     default:
                         Console.Clear();
@@ -530,8 +542,7 @@ namespace SoloProject
         class Dungeon
         {
             ClassChain chain;
-            private int clearCount = 0;
-            int levelup = 10;
+            int clearCount = 0;
             public void getClass(ClassChain classchain)
             {
                 chain = classchain;
@@ -541,7 +552,7 @@ namespace SoloProject
             {
                 Random random = new Random();
 
-                Console.WriteLine("\n[던전 - 난이도 선택]\n");
+                Console.WriteLine("\n던전 - 난이도 선택\n");
                 Console.WriteLine("[공격력]");
                 Console.WriteLine($"   {chain.state.Strike}");
                 Console.WriteLine("[방어력]");
@@ -551,7 +562,7 @@ namespace SoloProject
                 }
                 else Console.WriteLine($"   {chain.state.Depence}");
                 Console.WriteLine(" [체력]");
-                Console.WriteLine($"  {chain.state.HP}");
+                Console.WriteLine($"   {chain.state.HP}");
 
                 Console.WriteLine("\n1. 쉬움");
                 Console.WriteLine("2. 보통");
@@ -862,6 +873,7 @@ namespace SoloProject
                     Console.WriteLine("[탐험 결과]\n");
                     Console.WriteLine($"체력 {chain.state.HP} -> {chain.state.HP - hp}");
                     Console.WriteLine($"골드 {chain.state.Gold} -> {chain.state.Gold + gold}");
+                    Console.WriteLine(clearCount);
                     Console.WriteLine("\n0. 나가기\n");
                     int n = Number();
                     switch (n)
@@ -899,6 +911,8 @@ namespace SoloProject
 
                 void ClearCount(bool clear, int difficult)
                 {
+                    int levelup = 10 * chain.state.Lv;
+
                     if (clear)
                     {
                         clearCount += difficult;
@@ -906,14 +920,67 @@ namespace SoloProject
                     if (clearCount > levelup)
                     {
                         chain.state.Lv++;
-                        levelup *= chain.state.Lv;
                         clearCount = 0;
                     }
                 }
             }
         }
 
+        class Heal
+        {
+            ClassChain chain;
+            public void getClass(ClassChain classchain)
+            {
+                chain = classchain;
+            }
+            public void ViewHeal()
+            {
+                Console.WriteLine("\n휴식하기");
+                Console.WriteLine("500G를 내면 체력을 회복할 수 있습니다.\n");
+                Console.WriteLine("[보유 골드]");
+                Console.WriteLine($"{chain.state.Gold}G");
+                Console.WriteLine("\n1. 휴식하기");
+                Console.WriteLine("\n0. 나가기\n");
+                int n = Number();
+                switch (n)
+                {
+                    case 0:
+                        Console.Clear();
+                        break;
+                    case 1:
+                        Console.Clear();
+                        CompleteHeal();
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("잘못된 입력입니다.\n");
+                        ViewHeal();
+                        break;
+                }
+            }
 
+            void CompleteHeal()
+            {
+                int hp = 100;
+                Console.WriteLine("휴식이 완료되었습니다.");
+                Console.WriteLine($"{chain.state.HP} -> {hp}");
+                chain.state.HP = hp;
+                chain.state.Gold -= 500;
+                Console.WriteLine("\n0. 나가기\n");
+                int n = Number();
+                switch (n)
+                {
+                    case 0:
+                        Console.Clear();
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("잘못된 입력입니다.\n");
+                        Console.WriteLine("체력이 회복되었으므로 나갑니다.\n");
+                        break;
+                }
+            }
+        }
 
         class ItemList
         {
@@ -956,11 +1023,11 @@ namespace SoloProject
                 {
                     if (items[i].name.Contains("갑옷") || items[i].name.Contains("망토"))
                     {
-                        Console.WriteLine($" {i+1}. {items[i].name}\t| 방어력 +{items[i].stats} | {items[i].gold} | {items[i].comment}");
+                        Console.WriteLine($" {i+1}.{items[i].name}\t| 방어력 +{items[i].stats} | {items[i].gold} | {items[i].comment}");
                     }
                     else
                     {
-                        Console.WriteLine($" {i+1}. {items[i].name}\t| 공격력 +{items[i].stats} | {items[i].gold} | {items[i].comment}");
+                        Console.WriteLine($" {i+1}.{items[i].name}\t| 공격력 +{items[i].stats} | {items[i].gold} | {items[i].comment}");
                     }
                 }
             }
@@ -1017,11 +1084,11 @@ namespace SoloProject
                     }
                     else if (inventoryitems[i].name.Contains("갑옷") || inventoryitems[i].name.Contains("망토"))
                     {
-                        Console.WriteLine($" {i+1}. {inventoryitems[i].name}\t| 방어력 +{inventoryitems[i].stats} | {inventoryitems[i].comment}");
+                        Console.WriteLine($" {i+1}.{inventoryitems[i].name}\t| 방어력 +{inventoryitems[i].stats} | {inventoryitems[i].comment}");
                     }
                     else
                     {
-                        Console.WriteLine($" {i+1}. {inventoryitems[i].name}\t| 공격력 +{inventoryitems[i].stats} | {inventoryitems[i].comment}");
+                        Console.WriteLine($" {i+1}.{inventoryitems[i].name}\t| 공격력 +{inventoryitems[i].stats} | {inventoryitems[i].comment}");
                     }
                 }
             }
@@ -1037,11 +1104,11 @@ namespace SoloProject
                     }
                     else if (inventoryitems[i].name.Contains("갑옷") || inventoryitems[i].name.Contains("망토"))
                     {
-                        Console.WriteLine($" {i + 1}. {inventoryitems[i].name}\t| 방어력 +{inventoryitems[i].stats} | {inventoryitems[i].gold} | {inventoryitems[i].comment}");
+                        Console.WriteLine($" {i + 1}.{inventoryitems[i].name}\t| 방어력 +{inventoryitems[i].stats} | {inventoryitems[i].gold} | {inventoryitems[i].comment}");
                     }
                     else
                     {
-                        Console.WriteLine($" {i + 1}. {inventoryitems[i].name}\t| 공격력 +{inventoryitems[i].stats} | {inventoryitems[i].gold} | {inventoryitems[i].comment}");
+                        Console.WriteLine($" {i + 1}.{inventoryitems[i].name}\t| 공격력 +{inventoryitems[i].stats} | {inventoryitems[i].gold} | {inventoryitems[i].comment}");
                     }
                 }
             }
