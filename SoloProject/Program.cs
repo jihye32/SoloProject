@@ -873,7 +873,6 @@ namespace SoloProject
                     Console.WriteLine("[탐험 결과]\n");
                     Console.WriteLine($"체력 {chain.state.HP} -> {chain.state.HP - hp}");
                     Console.WriteLine($"골드 {chain.state.Gold} -> {chain.state.Gold + gold}");
-                    Console.WriteLine(clearCount);
                     Console.WriteLine("\n0. 나가기\n");
                     int n = Number();
                     switch (n)
