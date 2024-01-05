@@ -1,16 +1,8 @@
-﻿using System;
-using System.ComponentModel.Design;
-using System.Reflection.Emit;
-using System.Reflection.Metadata;
-using System.Security.Claims;
-using System.Xml.Linq;
-using static System.Formats.Asn1.AsnWriter;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-
-namespace SoloProject
+﻿namespace SoloProject
 {
     internal class Program
     {
+        //해설 참조하여 변경 부분 주석 추가. 이전 주석과 헷갈리지 않게 앞에 * 추가.
         static void Main(string[] args)
         {
             ClassChain chain = new ClassChain();
@@ -39,7 +31,76 @@ namespace SoloProject
                 gameOver = menu.CheckGameOver();
             }
         }
-        
+
+        static int Number()
+        {
+            int n;
+            Console.Write("원하시는 행동을 입력해주세요.\n>>");
+
+            bool check = int.TryParse(Console.ReadLine(), out n);
+            int number = check ? n : -1;
+            return number;
+        }
+
+        //*해설 보고 작성
+        private static int CheckInput(int min, int max)
+        {
+            bool check;
+            int input;
+            //do-while : do 내용을 먼저 실행하고 while이 true면 do 내용을 또 실행함.
+            do
+            {
+                Console.Write("원하시는 행동을 입력해주세요.\n>>");
+
+                check = int.TryParse(Console.ReadLine(), out input);
+            } while (check == false || CheckInput(input, min, max) == false);
+            return input;
+        }
+
+        //*해설 보고 작성
+        private static bool CheckInput(int input, int min, int max)
+        {
+            if (min <= input && input <= max)
+            {
+                return true;
+            }
+            else return false;
+        }
+        //*해설과 내가 쓴 부분의 다른 점은 잘못입력했다는 것을 추가 했느냐 안했느냐 같음! 그래서 선택창 부분이 긴 것도 있음..
+
+        //*텍스트 색상 변경 함수들
+        private static void ChangeTextColorMagenta(string text) //화면 제목에 사용
+        {
+            Console.ForegroundColor = ConsoleColor.Magenta;
+            Console.WriteLine(text);
+            Console.ResetColor(); //컬러 리셋을 해주지 않으면 아래에 나올 텍스트들도 마젠타 컬러로 나오게됨.
+        }
+
+        private static void ChangeTextColorDarkMagenta(int idx) //아이템 선택 가능할 때 사용
+        {
+            Console.ForegroundColor = ConsoleColor.DarkMagenta;
+            Console.Write(idx);
+            Console.ResetColor();
+        }
+
+        private static void HighlightsTextColorYellow(string s1, string s2, string s3 = "") //스탯 보여줄 때 사용
+        {
+            Console.Write(s1);
+            Console.ForegroundColor = ConsoleColor.Yellow;
+            Console.Write(s2);
+            Console.ResetColor();
+            Console.WriteLine(s3);
+        }
+
+        private static void HighlightsTextColorCyan(string s1, string s2, string s3) //장착 [E] 추가 시 사용
+        {
+            Console.Write(s1);
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            Console.Write(s2);
+            Console.ResetColor();
+            Console.WriteLine(s3);
+        }
+
         class ClassChain
         {
             public Menu menu = new Menu();
@@ -176,19 +237,10 @@ namespace SoloProject
                 return check;
             }
         }
-        static int Number()
-        {
-            int n;
-            Console.Write("원하시는 행동을 입력해주세요.\n>>");
 
-            //숫자가 아닌 문자를 입력했을 때 잘못입력했다는 알림 나오게 추가.
-            bool check = int.TryParse(Console.ReadLine(), out n);
-            int number = check ? n : -1;
-            return number;
-        }
-
-        class State
+        class State //*==Character
         {
+            //*외부에서 변경할 수 없도록 하기 위해서는 set;을 없애면 됨.
             public int Lv { get; set; }
             public string name { get; set; }
             public float Strike { get; set; }
@@ -206,13 +258,17 @@ namespace SoloProject
                 Console.WriteLine("상태보기");
                 Console.WriteLine("캐릭터의 정보가 표시됩니다.");
                 Console.WriteLine();
+                //10이 넘어갔을 때 값 변경 추가 필요
                 if (Lv < 10)
                 {
                     Console.WriteLine("LV : 0" + Lv);
                 }
                 else Console.WriteLine("LV : " + Lv);
-                Console.WriteLine("LV : 0" + Lv); //10이 넘어갔을 때 값 변경 추가 필요
-                Console.WriteLine($"Chad ( {name} )");
+                
+                //*Lv이 한자리 수일 때 앞에 0이 사라지지 않게 만드는 법.
+                Console.WriteLine("LV : " + Lv.ToString("00"));
+
+                Console.WriteLine($"Chad ( {name} )"); //*Chad가 name이고 name은 직업이였다.
 
                 if (checkStrike)
                 {
@@ -911,105 +967,99 @@ namespace SoloProject
                         }
                         break;
                 }
-
-                void Clear(int hp, int gold, int difficult)//확인
+            }
+            void Clear(int hp, int gold, int difficult)//확인
+            {
+                Console.WriteLine("\n던전 클리어\n");
+                Console.WriteLine("[탐험 결과]\n");
+                Console.WriteLine($"체력 {chain.state.HP} -> {chain.state.HP - hp}");
+                Console.WriteLine($"골드 {chain.state.Gold} -> {chain.state.Gold + gold}\n");
+                ClearCount(difficult);
+                Console.WriteLine("\n0. 나가기\n");
+                int n = Number();
+                switch (n)
                 {
-                    Console.WriteLine("\n던전 클리어\n");
-                    Console.WriteLine("[탐험 결과]\n");
-                    Console.WriteLine($"체력 {chain.state.HP} -> {chain.state.HP - hp}");
-                    Console.WriteLine($"골드 {chain.state.Gold} -> {chain.state.Gold + gold}\n");
-                    ClearCount(difficult);
-                    Console.WriteLine("\n0. 나가기\n");
-                    int n = Number();
-                    switch (n)
-                    {
-                        case 0:
-                            Console.Clear();
-                            break;
-                        default:
-                            Console.Clear();
-                            Console.WriteLine("잘못된 입력입니다.\n");
-                            Clear(hp, gold, difficult);
-                            break;
-                    }
+                    case 0:
+                        Console.Clear();
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("잘못된 입력입니다.\n");
+                        Clear(hp, gold, difficult);
+                        break;
                 }
+            }
 
-                void NonClear(int hp)
+            void NonClear(int hp)
+            {
+                Console.WriteLine("\n던전 클리어 실패\n");
+                Console.WriteLine("[탐험 결과]\n");
+                Console.WriteLine($"체력 {chain.state.HP} -> {chain.state.HP - hp}");
+                Console.WriteLine("\n0. 나가기\n");
+                int n = Number();
+                switch (n)
                 {
-                    Console.WriteLine("\n던전 클리어 실패\n");
-                    Console.WriteLine("[탐험 결과]\n");
-                    Console.WriteLine($"체력 {chain.state.HP} -> {chain.state.HP - hp}");
-                    Console.WriteLine("\n0. 나가기\n");
-                    int n = Number();
-                    switch (n)
-                    {
-                        case 0:
-                            Console.Clear();
-                            break;
-                        default:
-                            Console.Clear();
-                            Console.WriteLine("잘못된 입력입니다.\n");
-                            NonClear(hp);
-                            break;
-                    }
+                    case 0:
+                        Console.Clear();
+                        break;
+                    default:
+                        Console.Clear();
+                        Console.WriteLine("잘못된 입력입니다.\n");
+                        NonClear(hp);
+                        break;
                 }
+            }
 
-                void ClearCount(int difficult)
+            void ClearCount(int difficult)
+            {
+                int levelup = 10 * chain.state.Lv;
+
+                clearCount += difficult;
+                switch (difficult)
                 {
-                    int levelup = 10 * chain.state.Lv;
-
-                    clearCount += difficult;
-                    switch (difficult)
-                    {
-                        case 1:
-                            Item easydropitem = new Item(7, 2.5f, 0.5f);
-                            easydropitem.goldInt *= 85;
-                            easydropitem.goldInt /= 100;
-                            easydropitem.gold = $"{easydropitem.goldInt}G";
-                            Console.WriteLine("\n아이템을 얻었습니다.\n");
-                            Console.WriteLine($"[ {easydropitem.name}  | + {easydropitem.stats}  |  {easydropitem.comment} ]");
-                            chain.itemlist.InventoryItem(easydropitem);
-                            break;
-                        case 2:
-                            Item nomaldropitem = new Item(3, 4, 2);
-                            nomaldropitem.goldInt *= 85;
-                            nomaldropitem.goldInt /= 100;
-                            nomaldropitem.gold = $"{nomaldropitem.goldInt}G";
-                                Console.WriteLine("\n아이템을 얻었습니다.\n");
-                                Console.WriteLine($"[{nomaldropitem.name} | +{nomaldropitem.stats} | {nomaldropitem.comment}]");
-                            chain.itemlist.InventoryItem(nomaldropitem);
-                            break;
-                        case 3:
-                            Item harddropitem = new Item(0, 2, 6);
-                            harddropitem.goldInt *= 85;
-                            harddropitem.goldInt /= 100;
-                            harddropitem.gold = $"{harddropitem.goldInt}G";
-                            Console.WriteLine("\n아이템을 얻었습니다.\n");
-                            Console.WriteLine($"[{harddropitem.name} | +{harddropitem.stats} | {harddropitem.comment}]");
-                            chain.itemlist.InventoryItem(harddropitem);
-                            break;
-                    }
-                    if (clearCount > levelup)
-                    {
-                        LevelUp();
-                        chain.state.Lv++;
-                        chain.state.Strike += 0.5f;
-                        chain.state.Depence += 1;
-                        chain.state.HP += 10;
-                        clearCount = 0;
-                    }
+                    case 1:
+                        Item easydropitem = new Item(7, 2.5f, 0.5f);
+                        easydropitem.goldInt *= 85;
+                        easydropitem.goldInt /= 100;
+                        easydropitem.gold = $"{easydropitem.goldInt}G";
+                        Console.WriteLine("\n아이템을 얻었습니다.\n");
+                        Console.WriteLine($"[ {easydropitem.name}  | + {easydropitem.stats}  |  {easydropitem.comment} ]");
+                        chain.itemlist.InventoryItem(easydropitem);
+                        break;
+                    case 2:
+                        Item nomaldropitem = new Item(3, 4, 2);
+                        nomaldropitem.goldInt *= 85;
+                        nomaldropitem.goldInt /= 100;
+                        nomaldropitem.gold = $"{nomaldropitem.goldInt}G";
+                        Console.WriteLine("\n아이템을 얻었습니다.\n");
+                        Console.WriteLine($"[{nomaldropitem.name} | +{nomaldropitem.stats} | {nomaldropitem.comment}]");
+                        chain.itemlist.InventoryItem(nomaldropitem);
+                        break;
+                    case 3:
+                        Item harddropitem = new Item(0, 2, 6);
+                        harddropitem.goldInt *= 85;
+                        harddropitem.goldInt /= 100;
+                        harddropitem.gold = $"{harddropitem.goldInt}G";
+                        Console.WriteLine("\n아이템을 얻었습니다.\n");
+                        Console.WriteLine($"[{harddropitem.name} | +{harddropitem.stats} | {harddropitem.comment}]");
+                        chain.itemlist.InventoryItem(harddropitem);
+                        break;
                 }
-
-                void LevelUp()
+                if (clearCount > levelup)
                 {
-                    Console.WriteLine("\n축하합니다! 레벨이 오르셨습니다!\n");
-                    Console.WriteLine($"LV : {chain.state.Lv} -> LV : {chain.state.Lv + 1}");
-                    chain.state.Lv++;
-                    chain.state.Strike += 0.5f;
-                    chain.state.Depence += 1;
-                    chain.state.HP += 10;
-                    clearCount = 0;
+                    LevelUp();
                 }
+            }
+
+            void LevelUp()
+            {
+                Console.WriteLine("\n축하합니다! 레벨이 오르셨습니다!\n");
+                Console.WriteLine($"LV : {chain.state.Lv} -> LV : {chain.state.Lv + 1}");
+                chain.state.Lv++;
+                chain.state.Strike += 0.5f;
+                chain.state.Depence += 1;
+                chain.state.HP += 10;
+                clearCount = 0;
             }
         }
 
@@ -1103,6 +1153,37 @@ namespace SoloProject
                     }  
                 }
             }
+
+            //*방어구랑 무기랑 if로 안나눠도 되는 식. 대신 방어구의 경우 strike = 0, 무기의 경우 depence = 0으로 설정 필요
+            private void PrintItemList(bool withNumber = false, int idx = 0)
+            {
+                int i = 0; //for문으로 작성해야하지만 우선 생략
+                bool equ = false; //장착되었는지 확인하는 변수. class Item에 추가 필요.
+                Console.Write("- ");
+                if (withNumber)
+                {
+                    //for i = 0; i < idx; idx는 인덱스 갯수
+                    ChangeTextColorDarkMagenta(i + 1);
+                }
+                if (equ)
+                {
+                    HighlightsTextColorCyan("[", "E", "]");
+                }
+                //지금 item은 무기라 가정. stats1 = 2;
+                if (items[i].stats != 0) Console.WriteLine($"공격력 {(items[i].stats > 0 ? "+" : "")} {items[i].stats}");
+                //stats2 = 0;
+                if (items[i].stats != 0) Console.WriteLine($"방어력 {(items[i].stats > 0 ? "+" : "")} {items[i].stats}");
+                //우선 무기면 stats1 != 0 이므로 첫번째 if문 실행. 0보다 크므로 +를 추가해서 공격력 작성.
+                //여기서 의문점은 어차피 stats != 0이면 그에 맞는 값을 가지고 있다는 것인데 왜 삼항연산자를 사용한건지?
+            }
+
+            //*장착 상태 변경 함수. equ는 class Item에 있어야하지만 사용을 위해서 여기다가 적었음.
+            private void ToggleEquipStatus(int idx)
+            {
+                bool equ = false;
+                equ = !equ;
+            }
+
             public void List()
             {
                 int itemLength = items.Length;
