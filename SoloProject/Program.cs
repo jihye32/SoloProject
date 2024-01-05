@@ -478,18 +478,29 @@ namespace SoloProject
                     }
                     else if (selectgold <= chain.state.Gold)
                     {
-                        chain.state.Gold = chain.state.Gold - selectgold;
-
                         Item buyitem = new Item(5,3,1);
-                        buyitem.name = chain.itemlist.items[selectItem - 1].name;
-                        buyitem.stats = chain.itemlist.items[selectItem - 1].stats;
-                        buyitem.comment = chain.itemlist.items[selectItem - 1].comment;
-                        buyitem.goldInt = chain.itemlist.items[selectItem - 1].goldInt * 85;
-                        buyitem.goldInt = buyitem.goldInt / 100;
-                        buyitem.gold = buyitem.goldInt.ToString() + "G";
 
-                        chain.itemlist.InventoryItem(buyitem);
-                        chain.itemlist.items[selectItem - 1].gold = "구매완료";
+                        if (chain.itemlist.inventoryitems.Length < 10)
+                        {
+                            chain.state.Gold = chain.state.Gold - selectgold;
+                            buyitem.name = chain.itemlist.items[selectItem - 1].name;
+                            buyitem.stats = chain.itemlist.items[selectItem - 1].stats;
+                            buyitem.comment = chain.itemlist.items[selectItem - 1].comment;
+                            buyitem.goldInt = chain.itemlist.items[selectItem - 1].goldInt * 85;
+                            buyitem.goldInt = buyitem.goldInt / 100;
+                            buyitem.gold = buyitem.goldInt.ToString() + "G";
+
+                            chain.itemlist.InventoryItem(buyitem);
+                            chain.itemlist.items[selectItem - 1].gold = "구매완료";
+                        }
+                        else
+                        {
+                            Console.Clear();
+                            Console.WriteLine("인벤토리가 가득 차 구매하실 수 없습니다.");
+                            Console.WriteLine("인벤토리 아이템을 판매하시고 구매하시기 바랍니다.\n");
+                            ViewStore();
+                        }
+                        
                         Console.Clear();
                         StoreBuy();
                     }
