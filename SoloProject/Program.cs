@@ -204,6 +204,11 @@ namespace SoloProject
                 Console.Clear();
                 Console.WriteLine("상태보기");
                 Console.WriteLine();
+                if (Lv < 10)
+                {
+                    Console.WriteLine("LV : 0" + Lv);
+                }
+                else Console.WriteLine("LV : " + Lv);
                 Console.WriteLine("LV : 0" + Lv); //10이 넘어갔을 때 값 변경 추가 필요
                 Console.WriteLine($"Chad ( {name} )");
 
