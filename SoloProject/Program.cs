@@ -469,7 +469,7 @@ namespace SoloProject
                     {
                         chain.state.Gold = chain.state.Gold - selectgold;
 
-                        Item buyitem = new Item();
+                        Item buyitem = new Item(5,3,1);
                         buyitem.name = chain.itemlist.items[selectItem - 1].name;
                         buyitem.stats = chain.itemlist.items[selectItem - 1].stats;
                         buyitem.comment = chain.itemlist.items[selectItem - 1].comment;
@@ -733,7 +733,6 @@ namespace SoloProject
                 int needDepence = Depence;
                 int needHp = hp;
                 int clearGold;
-                bool clear;
 
                 float strike = chain.state.Strike;
                 int depence = chain.state.Depence;
@@ -762,18 +761,15 @@ namespace SoloProject
                         if (percent < ClearPercent)
                         {
                             clearGold = 500 + (random.Next(2) + chain.state.Lv) * 100;
-                            clear = true;
-                            Clear(10, clearGold);
+                            Clear(10, clearGold, 1);
                             chain.state.HP -= 10;
                             chain.state.Gold += clearGold;
                         }
                         else
                         {
-                            clear = false;
-                            NonClear(hp);
+                            NonClear(needHp);
                             chain.state.HP -= hp;
                         }
-                        ClearCount(clear, 1);
                         break;
                     case 1:
                         if (strike >= needStrike)
@@ -803,18 +799,15 @@ namespace SoloProject
                         if (percent < ClearPercent)
                         {
                             clearGold = 700 + (random.Next(5) + chain.state.Lv) * 100;
-                            clear = true;
-                            Clear(20, clearGold);
+                            Clear(20, clearGold, 2);
                             chain.state.HP -= 20;
                             chain.state.Gold += clearGold;
                         }
                         else
                         {
-                            clear = false;
-                            NonClear(hp);
+                            NonClear(needHp);
                             chain.state.HP -= hp;
                         }
-                        ClearCount(clear, 2);
                         break;
                     case 2:
                         if (strike >= needStrike)
@@ -852,27 +845,25 @@ namespace SoloProject
                         if (percent < ClearPercent)
                         {
                             clearGold = 1000 + (random.Next(10) + chain.state.Lv) * 100;
-                            clear = true;
-                            Clear(40, clearGold);
+                            Clear(40, clearGold, 3);
                             chain.state.HP -= 40;
                             chain.state.Gold += clearGold;
                         }
                         else
                         {
-                            clear = false;
-                            NonClear(hp);
+                            NonClear(needHp);
                             chain.state.HP -= hp;
                         }
-                        ClearCount(clear, 3);
                         break;
                 }
 
-                void Clear(int hp, int gold)
+                void Clear(int hp, int gold, int difficult)
                 {
                     Console.WriteLine("\n던전 클리어\n");
                     Console.WriteLine("[탐험 결과]\n");
                     Console.WriteLine($"체력 {chain.state.HP} -> {chain.state.HP - hp}");
-                    Console.WriteLine($"골드 {chain.state.Gold} -> {chain.state.Gold + gold}");
+                    Console.WriteLine($"골드 {chain.state.Gold} -> {chain.state.Gold + gold}\n");
+                    ClearCount(difficult);
                     Console.WriteLine("\n0. 나가기\n");
                     int n = Number();
                     switch (n)
@@ -883,7 +874,7 @@ namespace SoloProject
                         default:
                             Console.Clear();
                             Console.WriteLine("잘못된 입력입니다.\n");
-                            Clear(hp, gold);
+                            Clear(hp, gold, difficult);
                             break;
                     }
                 }
@@ -903,18 +894,45 @@ namespace SoloProject
                         default:
                             Console.Clear();
                             Console.WriteLine("잘못된 입력입니다.\n");
-                            Clear(hp, gold);
+                            NonClear(hp);
                             break;
                     }
                 }
 
-                void ClearCount(bool clear, int difficult)
+                void ClearCount(int difficult)
                 {
                     int levelup = 10 * chain.state.Lv;
 
-                    if (clear)
+                    clearCount += difficult;
+                    switch (difficult)
                     {
-                        clearCount += difficult;
+                        case 1:
+                            Item easydropitem = new Item(7, 2.5f, 0.5f);
+                            easydropitem.goldInt *= 85;
+                            easydropitem.goldInt /= 100;
+                            easydropitem.gold = $"{easydropitem.goldInt}G";
+                            Console.WriteLine("아이템을 얻었습니다.");
+                            Console.WriteLine($"[ {easydropitem.name}  | + {easydropitem.stats}  |  {easydropitem.comment} ]");
+                            chain.itemlist.InventoryItem(easydropitem);
+                            break;
+                        case 2:
+                            Item nomaldropitem = new Item(3, 4, 2);
+                            nomaldropitem.goldInt *= 85;
+                            nomaldropitem.goldInt /= 100;
+                            nomaldropitem.gold = $"{nomaldropitem.goldInt}G";
+                                Console.WriteLine("아이템을 얻었습니다.");
+                                Console.WriteLine($"[{nomaldropitem.name} | +{nomaldropitem.stats} | {nomaldropitem.comment}]");
+                            chain.itemlist.InventoryItem(nomaldropitem);
+                            break;
+                        case 3:
+                            Item harddropitem = new Item(0, 2, 6);
+                            harddropitem.goldInt *= 85;
+                            harddropitem.goldInt /= 100;
+                            harddropitem.gold = $"{harddropitem.goldInt}G";
+                            Console.WriteLine("아이템을 얻었습니다.");
+                            Console.WriteLine($"[{harddropitem.name} | +{harddropitem.stats} | {harddropitem.comment}]");
+                            chain.itemlist.InventoryItem(harddropitem);
+                            break;
                     }
                     if (clearCount > levelup)
                     {
@@ -1020,7 +1038,7 @@ namespace SoloProject
                 items = new Item[count];
                 for(int i = 0; i < count; i++)
                 {
-                    items[i] = new Item();
+                    items[i] = new Item(6-chain.state.Lv/3, 3 - chain.state.Lv/2, 1 + chain.state.Lv/2);
                 }
             }
             public void List(string plus)
@@ -1066,7 +1084,7 @@ namespace SoloProject
                     }
                     else if (i > 9)
                     {
-                        Console.WriteLine("가득 찼습니다.");
+                        Console.WriteLine("인벤토리가 가득 찼습니다. 버립니다.");
                         break;
                     }
                     else
@@ -1181,52 +1199,59 @@ namespace SoloProject
             public string gold="";
             public string comment="";
             public int goldInt=0;
-            private string[] firstName = { "나무", "낡은 ", "수련자 ", "청동", "무쇠", "스파트라의 " };
+            private string[] firstName = { "나무 ", "낡은 ", "수련자 ", "청동", "무쇠", "스파트라의 " };
             private string[] secondName = { "갑옷", "망토", "검", "창", "도끼"};
             private string firstComment = "";
             private string SecondComment = "";
 
-            public Item()
+            public Item(float a, float b, float c)
             {
-                MakeName();
+                MakeName(a,b,c);
                 MakeStats();
                 MakeGold();
                 MakeCommand();
             }
 
-            void MakeName() 
+            void MakeName(float a, float b, float c) 
             {
                 int n = random1.Next(10);
                 int nn = random1.Next(10);
-                int nnn = random1.Next(10);
+                int nnn = random1.Next(5);
 
-                int firstLength = firstName.Length;
                 int secondLength = secondName.Length;
 
-                if (n < 5)
+                if (n < a)//나무, 낡은 아이템 드랍
                 {
-                    if (nn < 5)
+                    if (nn < 2)//갑옷, 망토 아이템만 드랍
                     {
-                        name = firstName[nnn % firstLength] + secondName[nnn % 2];
-                    }
-                    else { name = firstName[nnn % firstLength] + secondName[nnn % secondLength]; }
-
-                }
-                else if (n < 8)
-                {
-                    if (nn < 5)
-                    {
-                        name = firstName[nnn % 5] + secondName[nnn % secondLength];
-                    }
-                    else { name = firstName[nnn % 3] + secondName[nnn % secondLength]; }
-                }
-                else
-                {
-                    if (nn < 5)
-                    {
-                        name = firstName[nnn % 3] + secondName[nnn % secondLength];
+                        name = firstName[nnn % 2] + secondName[nnn % 2];
                     }
                     else { name = firstName[nnn % 2] + secondName[nnn % secondLength]; }
+
+                }
+                else if (n < a+b)//수련자, 청동 아이템 드랍
+                {
+                    if (nn < 2)//갑옷, 망토 아이템만 드랍
+                    {
+                        name = firstName[nnn % 2 + 2] + secondName[nnn % 2];
+                    }
+                    else { name = firstName[nnn % 2 + 2] + secondName[nnn % secondLength]; }
+                }
+                else if (n < a+b+c)//무쇠 아이템 드랍
+                {
+                    if (nn < 2)//갑옷, 망토 아이템만 드랍
+                    {
+                        name = firstName[4] + secondName[nnn % 2];
+                    }
+                    else { name = firstName[4] + secondName[nnn % secondLength]; }
+                }
+                else //스파르타 아이템 드랍
+                {
+                    if (nn < 2)//갑옷, 망토 아이템만 드랍
+                    {
+                        name = firstName[5] + secondName[nnn % 2];
+                    }
+                    else { name = firstName[5] + secondName[nnn % secondLength]; }
                 }
             }
 
