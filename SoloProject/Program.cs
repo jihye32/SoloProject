@@ -101,6 +101,31 @@
             Console.WriteLine(s3);
         }
 
+        //*길이 맞추기
+        public static int GetPrintableLength(string str)
+        {
+            int length = 0;
+            foreach(char c in str)
+            {
+                if(char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.OtherLetter)
+                {
+                    length += 2;
+                }
+                else
+                {
+                    length += 1;
+                }
+            }
+            return length;
+        }
+
+        public static string PadRightForMixedText(string str, int totalLength)
+        {
+            int currentLength = GetPrintableLength(str);
+            int padding = totalLength - currentLength;
+            return str.PadRight(str.Length + padding);
+        }
+
         class ClassChain
         {
             public Menu menu = new Menu();
@@ -275,12 +300,16 @@
                     Console.WriteLine("공격력 : {0} (+{1})", Strike, PlusStrike);
                 }
                 else Console.WriteLine("공격력 : {0}", Strike);
+                //*삼항연산자 이용해서 작성
+                Console.WriteLine("공격력 : ", Strike, checkStrike ? string.Format(" (+{0})", PlusStrike) : "");
 
                 if (checkDepence)
                 {
                     Console.WriteLine("방어력 : {0} (+{1})", Depence, PlusDepence);
                 }
                 else Console.WriteLine("방어력 : {0}", Depence);
+                //*삼항연산자 이용해서 작성
+                Console.WriteLine("방어력 : ", Depence, checkDepence ? string.Format(" (+{0})", PlusDepence) : "");
 
                 Console.WriteLine("체  력 : {0}", HP);
                 Console.WriteLine("Gold : {0}G\n", Gold);
@@ -437,6 +466,15 @@
                     InventoryItemManage();
                 }
             }
+        }
+
+        //*class Item에서 equipped를 생성할 경우
+        static Dictionary<int, bool> isTypeEquipped = new Dictionary<int, bool>();
+        private static void ToggleEquipStatus(int idx)
+        {
+            if (!isTypeEquipped.ContainsKey(idx)) isTypeEquipped[idx] = false; //딕셔너리에 아이템 추가, ContainsKey로 아이템이 추가가 안되어있는 것을 확인하면 기본 Value로 false 넣어줌.
+            if (isTypeEquipped[idx] == true) return; //조건에 && !items[idx].IsEquipped 추가 필요. 방어구나 무기가 중복되지 않도록 설정인 것 같음.
+            //items[idx].IsEquipped = !items[idx].IsEquiped;
         }
 
         class Store
